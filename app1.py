@@ -11,7 +11,7 @@ def on_click_b1():
     set_label_text("l2", 333)
 
 def on_edited_i1():
-    set_input_text("i2", get_input_text("i1"))
+    set_input_text("i2", get_input_num("i1")+1)
 
 start(globals())
 

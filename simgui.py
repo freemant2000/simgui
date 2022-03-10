@@ -49,8 +49,11 @@ class SimGuiApp(QApplication):
     def get_input_text(self, name):
       inp=self.get_wid(name)
       return inp.text()
+    def get_input_num(self, name):
+      t=self.get_input_text(name)
+      return int(t)
     def set_input_text(self, name, text):
-      self.get_wid(name).setText(text)
+      self.get_wid(name).setText(str(text))
 
 sgapp=SimGuiApp()
 
@@ -71,6 +74,9 @@ def add_input(name):
 
 def get_input_text(name):
     return sgapp.get_input_text(name)        
+
+def get_input_num(name):
+    return sgapp.get_input_num(name)        
 
 def set_input_text(name, text):
     return sgapp.set_input_text(name, text)            
