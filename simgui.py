@@ -1,0 +1,15 @@
+from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QHBoxLayout, QGridLayout
+
+app=QApplication()
+wid=QWidget()
+lo=QGridLayout()
+wid.setLayout(lo)
+lbl=QLabel("Hi")
+lo.addWidget(lbl, 0, 0)
+lbl2=QLabel("Hello world")
+#lo.addWidget(lbl2, 1, 0, 1, 2)
+lo.addWidget(lbl2, 1, 0)
+btn=QPushButton("OK")
+lo.addWidget(btn, 0, 1)
+wid.show()
+app.exec_()
