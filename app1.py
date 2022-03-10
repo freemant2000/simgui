@@ -3,9 +3,9 @@ from simgui import *
 def on_ready():
     add_label("l1", "Hello")
     add_label("l2", "Hi")
-    add_input("i1", col=0, cols=2)
+    add_input("i1", cols=2)
     add_input("i2")
-    add_button("b1", "OK", col=0)
+    add_button("b1", "OK")
     go_back_row()
     add_button("b2", "Cancel", col=1)
     add_combo("cb1")
@@ -22,6 +22,6 @@ def on_edited_i1():
 
 def on_index_changed_cb1():
     print("hiiii")
-    
+
 start(globals())
 
