@@ -70,16 +70,23 @@ class SimGuiApp(QApplication):
     def add_combo_item(self, name, item):
         cb=self.get_wid(name)
         cb.addItem(item)
+    def get_combo_text(self, name):
+        cb=self.get_wid(name)
+        return cb.currentText()
     def get_input_text(self, name):
       inp=self.get_wid(name)
       return inp.text()
     def get_input_num(self, name):
       t=self.get_input_text(name)
       return int(t)
+    def get_input_value(self, name):
+      t=self.get_input_text(name)
+      try:
+        return int(t)
+      except:
+        return t
     def set_input_text(self, name, text):
       self.get_wid(name).setText(str(text))
-    def go_back_row(self):
-      self.auto_row-=1
 
 sgapp=SimGuiApp()
 
@@ -104,17 +111,17 @@ def get_input_text(name):
 def get_input_num(name):
     return sgapp.get_input_num(name)        
 
+def get_input_value(name):
+    return sgapp.get_input_value(name)        
+
 def set_input_text(name, text):
     return sgapp.set_input_text(name, text)
-
-def get_auto_row():
-  return sgapp.auto_row
-
-def go_back_row():
-  sgapp.go_back_row()
 
 def add_combo(name, **kwargs):
   sgapp.add_combo(name, **kwargs)      
 
 def add_combo_item(name, item):
   sgapp.add_combo_item(name, item)
+
+def get_combo_text(name):
+  return sgapp.get_combo_text(name)

@@ -12,15 +12,14 @@ def on_ready():
     add_button("b1", "OK")
     add_button("b2", "Cancel", right=True)
 
-
 def on_click_b1():
     set_label_text("l2", 333)
 
 def on_edited_i1():
-    set_input_text("i2", get_input_num("i1")+1)
+    set_input_text("i2", get_input_value("i1")+1)
 
 def on_index_changed_cb1():
-    print("hiiii")
+    print(get_combo_text("cb1")+" is selected")
 
 start(globals())
 
