@@ -1,17 +1,16 @@
 from simgui import *
 
 def on_ready():
-    add_label("l1", "Hello")
-    add_label("l2", "Hi")
-    add_input("i1", cols=2)
-    add_input("i2")
-    add_button("b1", "OK")
-    go_back_row()
-    add_button("b2", "Cancel", col=1)
-    add_combo("cb1")
+    add_label("l1", "Name")
+    add_input("i1", right=True)
+    add_label("l2", "Job Title")
+    add_input("i2", right=True)
+    add_combo("cb1", cols=2)
     add_combo_item("cb1", "chicken")
     add_combo_item("cb1", "beef")
     add_combo_item("cb1", "beans")
+    add_button("b1", "OK")
+    add_button("b2", "Cancel", right=True)
 
 
 def on_click_b1():

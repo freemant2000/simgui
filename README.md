@@ -1,7 +1,7 @@
 # line-ui
 A simple GUI API (wrapper around PySide2) for Python learners to build simple yet interesting event driven apps.
 
-![a sample line UI app](https://github.com/freemant2000/simgui/raw/main/images/simgui.png)
+![a sample GUI app](https://github.com/freemant2000/simgui/raw/main/images/simgui.png)
 
 It provides the following features:
 * Create labels, buttons, input fields and comboboxes.

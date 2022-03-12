@@ -7,7 +7,9 @@ class SimGuiApp(QApplication):
     def start(self, mod):
         self.mod=mod
         self.wid_dict={}
+        self.last_row=None
         self.auto_row=0
+        self.auto_col=0
         wid=QWidget()
         self.lo=QGridLayout()
         wid.setLayout(self.lo)
@@ -32,16 +34,20 @@ class SimGuiApp(QApplication):
     def add_wid(self, name, w, **kwargs):
       if not (name in self.wid_dict):
         self.wid_dict[name]=w
-        if "row" in kwargs or "col" in kwargs or "rows" in kwargs or "cols" in kwargs:
-          row=kwargs.get("row", self.auto_row)
-          col=kwargs.get("col", 0)
-          rows=kwargs.get("rows", 1)
-          cols=kwargs.get("cols", 1)
-          self.lo.addWidget(w, row, col, rows, cols)
-          self.auto_row=row+cols
+        if "right" in kwargs:
+          row=self.last_row
+          col=self.auto_col
         else:
-          self.lo.addWidget(w, self.auto_row, 0)
-          self.auto_row+=1
+          row=self.auto_row
+          col=0
+        row=kwargs.get("row", row)
+        col=kwargs.get("col", col)
+        rows=kwargs.get("rows", 1)
+        cols=kwargs.get("cols", 1)
+        self.lo.addWidget(w, row, col, rows, cols)
+        self.last_row=row
+        self.auto_row=row+rows
+        self.auto_col=col+cols
       else:
         raise ValueError(f"widget named {name} already exists", name)
     def get_wid(self, name):
