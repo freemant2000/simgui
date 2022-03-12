@@ -11,6 +11,7 @@ class SimGuiApp(QApplication):
         self.auto_row=0
         self.auto_col=0
         wid=QWidget()
+        wid.setWindowTitle("simgui")
         self.lo=QGridLayout()
         wid.setLayout(self.lo)
         self.call_handler("on_ready")
