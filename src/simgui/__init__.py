@@ -1,4 +1,6 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout
+from PySide2.QtGui import QPixmap
+from urllib.request import urlopen
 
 class SimGuiApp(QApplication):
     def __init__(self) -> None:
@@ -22,7 +24,7 @@ class SimGuiApp(QApplication):
         if handler:
           handler()
     def add_label(self, name, text, **kwargs):
-        lbl=QLabel(text)
+        lbl=QLabel(str(text))
         self.add_wid(name, lbl, **kwargs)
     def add_button(self, name, text, **kwargs):
         btn=QPushButton(text)
@@ -32,6 +34,13 @@ class SimGuiApp(QApplication):
         self.add_wid(name, btn, **kwargs)
     def set_label_text(self, name, text):
       self.get_wid(name).setText(str(text))
+    def set_label_pic(self, name, pic_url):
+      data=urlopen(pic_url).read()
+      pm=QPixmap()
+      pm.loadFromData(data)
+      lbl=self.get_wid(name)
+      lbl.setScaledContents(True)
+      lbl.setPixmap(pm)
     def add_wid(self, name, w, **kwargs):
       if not (name in self.wid_dict):
         self.wid_dict[name]=w
@@ -70,7 +79,7 @@ class SimGuiApp(QApplication):
         self.add_wid(name, cb, **kwargs)
     def add_combo_item(self, name, item):
         cb=self.get_wid(name)
-        cb.addItem(item)
+        cb.addItem(str(item))
     def get_combo_text(self, name):
         cb=self.get_wid(name)
         return cb.currentText()
@@ -99,6 +108,9 @@ def add_label(name, text, **kwargs):
 
 def set_label_text(name, text):
     sgapp.set_label_text(name, text)
+
+def set_label_pic(name, pic_url):
+    sgapp.set_label_pic(name, pic_url)
 
 def add_button(name, text, **kwargs):
     sgapp.add_button(name, text, **kwargs)    
