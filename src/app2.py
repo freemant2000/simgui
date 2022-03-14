@@ -11,9 +11,11 @@ def on_ready():
 
 def on_click_b1():
   #set_label_text("a1", b)
-  set_label_pic("a1", "https://media.gettyimages.com/illustrations/tyrannosaurus-rex-dinosaur-illustration-id99311107?s=612x612")
+  #set_label_pic("a1", "https://media.gettyimages.com/illustrations/tyrannosaurus-rex-dinosaur-illustration-id99311107?s=612x612")
+  set_wid_color("a1", "blue")
 
 def on_click_b2():
-  set_label_pic("a1", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbCuwaTTtDhzHqojo_s7elgql5ZIOo1Grg7g&usqp=CAU")
+  #set_label_pic("a1", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbCuwaTTtDhzHqojo_s7elgql5ZIOo1Grg7g&usqp=CAU")
+  set_wid_color("a1", "green")
 
 start(globals())

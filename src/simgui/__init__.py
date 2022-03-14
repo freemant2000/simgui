@@ -37,6 +37,9 @@ class SimGuiApp(QApplication):
     def set_wid_max_size(self, name, w, h):
       wid=self.get_wid(name)
       wid.setMaximumSize(w, h)
+    def set_wid_color(self, name, color):
+      wid=self.get_wid(name)
+      wid.setStyleSheet(f"background-color: {color}")
     def set_label_pic(self, name, pic_url):
       data=urlopen(pic_url).read()
       pm=QPixmap()
@@ -114,6 +117,9 @@ def set_label_text(name, text):
 
 def set_label_pic(name, pic_url):
     sgapp.set_label_pic(name, pic_url)
+
+def set_wid_color(name, color):
+    sgapp.set_wid_color(name, color)
 
 def set_wid_max_size(name, w, h):
     sgapp.set_wid_max_size(name, w, h)
