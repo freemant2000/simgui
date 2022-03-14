@@ -34,6 +34,9 @@ class SimGuiApp(QApplication):
         self.add_wid(name, btn, **kwargs)
     def set_label_text(self, name, text):
       self.get_wid(name).setText(str(text))
+    def set_wid_max_size(self, name, w, h):
+      wid=self.get_wid(name)
+      wid.setMaximumSize(w, h)
     def set_label_pic(self, name, pic_url):
       data=urlopen(pic_url).read()
       pm=QPixmap()
@@ -111,6 +114,9 @@ def set_label_text(name, text):
 
 def set_label_pic(name, pic_url):
     sgapp.set_label_pic(name, pic_url)
+
+def set_wid_max_size(name, w, h):
+    sgapp.set_wid_max_size(name, w, h)
 
 def add_button(name, text, **kwargs):
     sgapp.add_button(name, text, **kwargs)    
