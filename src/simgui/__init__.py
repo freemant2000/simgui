@@ -1,13 +1,28 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout
-from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
+from PySide2.QtGui import QPixmap, QBrush, QColor
+from PySide2.QtCore import Qt
 from urllib.request import urlopen
 
+class SimGraphicsView(QGraphicsView):
+  def __init__(self, scene, key_handler):
+      super().__init__(scene)
+      self.key_handler=key_handler
+  def keyPressEvent(self, event):
+    self.key_handler(event)
+
 class SimGuiApp(QApplication):
+    SCENE_WIDTH=400
+    SCENE_HEIGHT=300
     def __init__(self) -> None:
         super().__init__()
         self.mod=None
     def start(self, mod):
         self.mod=mod
+        self.key_ev=None
+        self.gs=None
+        self.gv=None
+        self.gi_dict={}
         self.wid_dict={}
         self.last_row=None
         self.auto_row=0
@@ -40,8 +55,8 @@ class SimGuiApp(QApplication):
     def set_wid_color(self, name, color):
       wid=self.get_wid(name)
       wid.setStyleSheet(f"background-color: {color}")
-    def set_label_pic(self, name, pic_url):
-      data=urlopen(pic_url).read()
+    def set_label_img(self, name, img_url):
+      data=urlopen(img_url).read()
       pm=QPixmap()
       pm.loadFromData(data)
       lbl=self.get_wid(name)
@@ -103,6 +118,50 @@ class SimGuiApp(QApplication):
         return t
     def set_input_text(self, name, text):
       self.get_wid(name).setText(str(text))
+    def add_graphics_view(self, min_w, min_h):
+        if self.gs:
+          raise ValueError("Only one graphics view can be added")
+        def on_key(event):
+          self.key_ev=event
+          self.call_handler("on_key")
+        self.gs=QGraphicsScene()
+        self.gv=SimGraphicsView(self.gs, on_key)
+        self.gv.setMinimumSize(min_w, min_h)
+        self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
+        self.add_wid("simgui_gv", self.gv)
+    def add_gi_img(self, name, x, y, w, h, img_url):
+      data=urlopen(img_url).read()
+      pm=QPixmap()
+      pm.loadFromData(data)
+      pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
+      gi=QGraphicsPixmapItem(pm2)
+      gi.setPos(x, y)
+      self.add_gi(name, gi)
+    def add_gi_rect(self, name, x, y, w, h, color):
+      gi=QGraphicsRectItem(x, y, w, h)
+      br=QBrush(QColor(color))
+      gi.setBrush(br)
+      self.add_gi(name, gi)
+    def add_gi(self, name, gi):
+      if self.gs==None:
+        raise ValueError("Must add a graphics scene first")
+      if name in self.gi_dict:
+        raise ValueError(f"Graphics item {name} already exists")
+      self.gi_dict[name]=gi
+      self.gs.addItem(gi)
+    def get_key(self):
+      code_map={Qt.Key_Left: "Left", Qt.Key_Right: "Right", Qt.Key_Up: "Up", Qt.Key_Down: "Down", \
+            Qt.Key_Enter: "Enter", Qt.Key_Insert: "Insert", Qt.Key_Delete: "Delete", \
+            Qt.Key_Return: "Enter", Qt.Key_Home: "Home", Qt.Key_End: "End",
+            Qt.Key_PageUp: "PageUp", Qt.Key_PageDown: "PageDown" }
+      key=self.key_ev.key()
+      txt=self.key_ev.text()
+      if key in code_map:
+        return code_map[key]
+      elif txt:
+        return txt
+      else:
+        return "Unknown"
 
 sgapp=SimGuiApp()
 
@@ -115,8 +174,8 @@ def add_label(name, text, **kwargs):
 def set_label_text(name, text):
     sgapp.set_label_text(name, text)
 
-def set_label_pic(name, pic_url):
-    sgapp.set_label_pic(name, pic_url)
+def set_label_img(name, img_url):
+    sgapp.set_label_img(name, img_url)
 
 def set_wid_color(name, color):
     sgapp.set_wid_color(name, color)
@@ -150,3 +209,15 @@ def add_combo_item(name, item):
 
 def get_combo_text(name):
   return sgapp.get_combo_text(name)
+
+def add_graphics_view(min_w, min_h):
+  sgapp.add_graphics_view(min_w, min_h)
+
+def add_gi_img(name, x, y, w, h, img_url):
+  sgapp.add_gi_img(name, x, y, w, h, img_url)
+
+def add_gi_rect(name, x, y, w, h, color):
+  sgapp.add_gi_rect(name, x, y, w, h, color)
+
+def get_key():
+  return sgapp.get_key()
