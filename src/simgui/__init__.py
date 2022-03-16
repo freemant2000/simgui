@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QTimer
 from urllib.request import urlopen
 
 class SimGraphicsView(QGraphicsView):
@@ -23,6 +23,7 @@ class SimGuiApp(QApplication):
         self.gs=None
         self.gv=None
         self.gi_dict={}
+        self.timer_dict={}
         self.wid_dict={}
         self.last_row=None
         self.auto_row=0
@@ -149,6 +150,21 @@ class SimGuiApp(QApplication):
         raise ValueError(f"Graphics item {name} already exists")
       self.gi_dict[name]=gi
       self.gs.addItem(gi)
+    def set_gi_pos(self, name, x, y):
+      gi=self.get_gi(name)
+      gi.setPos(x, y)
+    def get_gi_x(self, name):
+      gi=self.get_gi(name)
+      return gi.pos().x()
+    def get_gi_y(self, name):
+      gi=self.get_gi(name)
+      return gi.pos().y()
+    def get_gi(self, name):
+      if name in self.gi_dict:
+        return self.gi_dict[name]
+      else:
+        raise ValueError(f"No graphics item named {name}")
+
     def get_key(self):
       code_map={Qt.Key_Left: "Left", Qt.Key_Right: "Right", Qt.Key_Up: "Up", Qt.Key_Down: "Down", \
             Qt.Key_Enter: "Enter", Qt.Key_Insert: "Insert", Qt.Key_Delete: "Delete", \
@@ -162,6 +178,15 @@ class SimGuiApp(QApplication):
         return txt
       else:
         return "Unknown"
+    def start_timer(self, name, interval):
+      def on_timeout():
+        self.call_handler("on_timeout_"+name)
+      tm=QTimer()
+      tm.timeout.connect(on_timeout)
+      tm.start(int(interval*1000))
+      self.timer_dict[name]=tm
+    def stop_timer(self, name):
+      self.timer_dict[name].stop()
 
 sgapp=SimGuiApp()
 
@@ -221,3 +246,18 @@ def add_gi_rect(name, x, y, w, h, color):
 
 def get_key():
   return sgapp.get_key()
+
+def get_gi_x(name):
+  return sgapp.get_gi_x(name)
+
+def get_gi_y(name):
+  return sgapp.get_gi_y(name)
+
+def set_gi_pos(name, x, y):
+  sgapp.set_gi_pos(name, x, y)
+
+def start_timer(name, interval):
+  sgapp.start_timer(name, interval)
+
+def stop_timer(name):
+  sgapp.stop_timer(name)
