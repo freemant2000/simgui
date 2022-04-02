@@ -2,7 +2,7 @@ from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplicat
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
 from PySide2.QtCore import Qt, QTimer
-from urllib.request import urlopen
+from urllib.request import urlopen, build_opener
 
 class SimGraphicsView(QGraphicsView):
   def __init__(self, scene, key_handler):
@@ -28,6 +28,7 @@ class SimGuiApp(QApplication):
         self.last_row=None
         self.auto_row=0
         self.auto_col=0
+        self.make_opener()
         wid=QWidget()
         wid.setWindowTitle("simgui")
         self.lo=QGridLayout()
@@ -35,6 +36,10 @@ class SimGuiApp(QApplication):
         self.call_handler("on_ready")
         wid.show()
         self.exec_()
+    def make_opener(self):
+      self.op=build_opener()
+      self.op.addheaders=[("User-agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")]
+      self.op.cache={}
     def call_handler(self, fn):
         handler=self.mod.get(fn)
         if handler:
@@ -56,8 +61,15 @@ class SimGuiApp(QApplication):
     def set_wid_color(self, name, color):
       wid=self.get_wid(name)
       wid.setStyleSheet(f"background-color: {color}")
+    def fetch_web_data(self, url):
+      if url in self.op.cache:
+        return self.op.cache[url]
+      else:
+        d=self.op.open(url).read()
+        self.op.cache[url]=d
+        return d
     def set_label_img(self, name, img_url):
-      data=urlopen(img_url).read()
+      data=self.fetch_web_data(img_url)
       pm=QPixmap()
       pm.loadFromData(data)
       lbl=self.get_wid(name)
@@ -131,7 +143,7 @@ class SimGuiApp(QApplication):
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url):
-      data=urlopen(img_url).read()
+      data=self.fetch_web_data(img_url)
       pm=QPixmap()
       pm.loadFromData(data)
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
