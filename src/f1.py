@@ -1,3 +1,4 @@
-a=[6, 14, 4]
-x=[a[0]+a[1]//a[2], a[1]%a[2], a[2]]
-print(x)
+from random import randint
+
+a=randint(0, 1000)
+print("hi"+str(a))

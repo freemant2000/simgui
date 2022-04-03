@@ -3,6 +3,7 @@ from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
 from PySide2.QtCore import Qt, QTimer
 from urllib.request import urlopen, build_opener
+from random import randint
 
 class SimGraphicsView(QGraphicsView):
   def __init__(self, scene, key_handler):
@@ -177,6 +178,12 @@ class SimGuiApp(QApplication):
       else:
         raise ValueError(f"No graphics item named {name}")
 
+    def make_unique_name(self, prefix):
+      while True:
+        name=prefix+randint(0, 65535)
+        if not(name in self.gi_dict) and not(name in self.wid_dict):
+          return name
+
     def get_key(self):
       code_map={Qt.Key_Left: "Left", Qt.Key_Right: "Right", Qt.Key_Up: "Up", Qt.Key_Down: "Down", \
             Qt.Key_Enter: "Enter", Qt.Key_Insert: "Insert", Qt.Key_Delete: "Delete", \
@@ -273,3 +280,6 @@ def start_timer(name, interval):
 
 def stop_timer(name):
   sgapp.stop_timer(name)
+
+def make_unique_name(prefix):
+  return sgapp.make_unique_name(prefix)
