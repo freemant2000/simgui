@@ -7,6 +7,7 @@ def on_ready():
   add_graphics_view(400, 300)
   add_gi_img("ball", 100, 30, 50, 50, ball_url)
   start_timer("t1", 0.03)
+  add_gi_img("r", 300, 30, 30, 100, "racquet.png")
 
 def on_timeout_t1():
   global s

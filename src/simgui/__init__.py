@@ -143,10 +143,15 @@ class SimGuiApp(QApplication):
         self.gv.setMinimumSize(min_w, min_h)
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
         self.add_wid("simgui_gv", self.gv)
-    def add_gi_img(self, name, x, y, w, h, img_url):
-      data=self.fetch_web_data(img_url)
-      pm=QPixmap()
-      pm.loadFromData(data)
+    def add_gi_img(self, name, x, y, w, h, img_url_or_file):
+      from pathlib import Path
+      p=Path(img_url_or_file)
+      if p.exists():
+        pm=QPixmap(img_url_or_file)
+      else:
+        data=self.fetch_web_data(img_url_or_file)
+        pm=QPixmap()
+        pm.loadFromData(data)
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
       gi=QGraphicsPixmapItem(pm2)
       gi.setPos(x, y)
