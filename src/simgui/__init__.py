@@ -1,7 +1,7 @@
-from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout
+from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
-from PySide2.QtCore import Qt, QTimer
+from PySide2.QtCore import Qt, QTimer, QEvent
 from urllib.request import urlopen, build_opener
 from random import randint
 
@@ -30,13 +30,18 @@ class SimGuiApp(QApplication):
         self.auto_row=0
         self.auto_col=0
         self.make_opener()
-        wid=QWidget()
-        wid.setWindowTitle("simgui")
+        self.wid=QWidget()
+        self.wid.setWindowTitle("simgui")
         self.lo=QGridLayout()
-        wid.setLayout(self.lo)
-        self.call_handler("on_ready")
-        wid.show()
+        self.wid.setLayout(self.lo)
+        self.wid.show()
+        ev=QEvent(QEvent.Type.User)
+        self.postEvent(self, ev)
         self.exec_()
+    def event(self, ev):
+      if ev.type()==QEvent.Type.User:
+        self.call_handler("on_ready")  
+      return super().event(ev)
     def make_opener(self):
       self.op=build_opener()
       self.op.addheaders=[("User-agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")]
@@ -144,14 +149,17 @@ class SimGuiApp(QApplication):
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
-      from pathlib import Path
-      p=Path(img_url_or_file)
-      if p.exists():
-        pm=QPixmap(img_url_or_file)
-      else:
+      if img_url_or_file.find("://")>0:
         data=self.fetch_web_data(img_url_or_file)
         pm=QPixmap()
         pm.loadFromData(data)
+      else:
+        from pathlib import Path
+        p=Path(img_url_or_file)
+        if p.exists():
+          pm=QPixmap(img_url_or_file)
+        else:
+          raise ValueError(f"File {img_url_or_file} not found")
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
       gi=QGraphicsPixmapItem(pm2)
       gi.setPos(x, y)
@@ -211,6 +219,16 @@ class SimGuiApp(QApplication):
       self.timer_dict[name]=tm
     def stop_timer(self, name):
       self.timer_dict[name].stop()
+    def are_gi_overlap(self, n1, n2):
+      gi1=self.get_gi(n1)
+      gi2=self.get_gi(n2)
+      r1=gi1.boundingRect()
+      r1=gi1.mapRectToParent(r1)
+      r2=gi2.boundingRect()
+      r2=gi2.mapRectToParent(r2)
+      return r1.intersects(r2)
+    def msg_box(self, text):
+      QMessageBox.information(self.wid, "Info", str(text))
 
 sgapp=SimGuiApp()
 
@@ -288,3 +306,12 @@ def stop_timer(name):
 
 def make_unique_name(prefix):
   return sgapp.make_unique_name(prefix)
+
+def are_gi_overlap(n1, n2):
+  return sgapp.are_gi_overlap(n1, n2)
+
+def msg_box(text):
+  sgapp.msg_box(text)
+
+def quit():
+  sgapp.quit()
