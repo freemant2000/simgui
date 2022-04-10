@@ -12,6 +12,13 @@ class SimGraphicsView(QGraphicsView):
   def keyPressEvent(self, event):
     self.key_handler(event)
 
+class MyWidget(QWidget):
+  def __init__(self, key_handler):
+      super().__init__()
+      self.key_handler=key_handler
+  def keyPressEvent(self, event):
+    self.key_handler(event)
+
 class SimGuiApp(QApplication):
     SCENE_WIDTH=400
     SCENE_HEIGHT=300
@@ -30,7 +37,7 @@ class SimGuiApp(QApplication):
         self.auto_row=0
         self.auto_col=0
         self.make_opener()
-        self.wid=QWidget()
+        self.wid=MyWidget(self.on_key)
         self.wid.setWindowTitle("simgui")
         self.lo=QGridLayout()
         self.wid.setLayout(self.lo)
@@ -137,14 +144,14 @@ class SimGuiApp(QApplication):
         return t
     def set_input_text(self, name, text):
       self.get_wid(name).setText(str(text))
+    def on_key(self, event):
+      self.key_ev=event
+      self.call_handler("on_key")      
     def add_graphics_view(self, min_w, min_h):
         if self.gs:
           raise ValueError("Only one graphics view can be added")
-        def on_key(event):
-          self.key_ev=event
-          self.call_handler("on_key")
         self.gs=QGraphicsScene()
-        self.gv=SimGraphicsView(self.gs, on_key)
+        self.gv=SimGraphicsView(self.gs, self.on_key)
         self.gv.setMinimumSize(min_w, min_h)
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
         self.add_wid("simgui_gv", self.gv)

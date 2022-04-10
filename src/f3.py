@@ -1,7 +1,6 @@
-from simgui import *
+from random import randint
 
-def on_ready():
-  msg_box("Hi")
-  quit()
-
-start(globals())
+a=4
+if randint(0, 1)==0:
+  a=-a
+print(a)
