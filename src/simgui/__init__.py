@@ -198,7 +198,12 @@ class SimGuiApp(QApplication):
         return self.gi_dict[name]
       else:
         raise ValueError(f"No graphics item named {name}")
-
+    def remove_gi(self, name):
+      if self.gs==None:
+        raise ValueError("Must add a graphics scene first")
+      gi=self.get_gi(name)
+      del self.gi_dict[name]
+      self.gs.removeItem(gi)
     def make_unique_name(self, prefix):
       while True:
         name=prefix+str(randint(0, 65535))
@@ -293,6 +298,9 @@ def add_gi_img(name, x, y, w, h, img_url):
 
 def add_gi_rect(name, x, y, w, h, color):
   sgapp.add_gi_rect(name, x, y, w, h, color)
+
+def remove_gi(name):
+  sgapp.remove_gi(name)
 
 def get_key():
   return sgapp.get_key()

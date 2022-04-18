@@ -34,5 +34,8 @@ def on_timeout_t1():
     x=get_gi_x(n)
     y=get_gi_y(n)
     set_gi_pos(n, x, y+5)
+  if coins!=[]:
+    n=coins[0]
+    print(get_gi_y(n))
 
 start(globals())
