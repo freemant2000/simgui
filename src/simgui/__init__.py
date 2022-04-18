@@ -153,7 +153,8 @@ class SimGuiApp(QApplication):
         self.gs=QGraphicsScene()
         self.gv=SimGraphicsView(self.gs, self.on_key)
         self.gv.setMinimumSize(min_w, min_h)
-        self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH, SimGuiApp.SCENE_HEIGHT)
+        #there is a 1 pixel margin hard coded
+        self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
       if img_url_or_file.find("://")>0:
@@ -200,7 +201,7 @@ class SimGuiApp(QApplication):
 
     def make_unique_name(self, prefix):
       while True:
-        name=prefix+randint(0, 65535)
+        name=prefix+str(randint(0, 65535))
         if not(name in self.gi_dict) and not(name in self.wid_dict):
           return name
 
