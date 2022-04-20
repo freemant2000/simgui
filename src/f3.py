@@ -1,6 +1,7 @@
-from random import randint
+import imp
+from simpleaudio import WaveObject
+from time import sleep
 
-a=4
-if randint(0, 1)==0:
-  a=-a
-print(a)
+wo=WaveObject.from_wave_file("/home/kent/test.wav")
+wo.play()
+sleep(4)

@@ -2,7 +2,8 @@ from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplicat
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
 from PySide2.QtCore import Qt, QTimer, QEvent
-from urllib.request import urlopen, build_opener
+from urllib.request import build_opener
+from simpleaudio import WaveObject
 from random import randint
 
 class SimGraphicsView(QGraphicsView):
@@ -242,6 +243,9 @@ class SimGuiApp(QApplication):
       return r1.intersects(r2)
     def msg_box(self, text):
       QMessageBox.information(self.wid, "Info", str(text))
+    def play_wav(self, path):
+      wo=WaveObject.from_wave_file(path)
+      wo.play()
 
 sgapp=SimGuiApp()
 
@@ -331,3 +335,6 @@ def msg_box(text):
 
 def quit():
   sgapp.quit()
+
+def play_wav(path):
+  sgapp.play_wav(path)
