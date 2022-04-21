@@ -1,7 +1,7 @@
-import imp
-from simpleaudio import WaveObject
-from time import sleep
+from simgui import *
 
-wo=WaveObject.from_wave_file("/home/kent/test.wav")
-wo.play()
-sleep(4)
+def on_ready():
+  add_graphics_view(400, 300)
+  
+
+start(globals())

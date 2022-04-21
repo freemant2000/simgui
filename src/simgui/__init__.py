@@ -28,6 +28,7 @@ class SimGuiApp(QApplication):
         self.mod=None
     def start(self, mod):
         self.mod=mod
+        self.in_modal=False
         self.key_ev=None
         self.gs=None
         self.gv=None
@@ -226,7 +227,8 @@ class SimGuiApp(QApplication):
         return "Unknown"
     def start_timer(self, name, interval):
       def on_timeout():
-        self.call_handler("on_timeout_"+name)
+        if not self.in_modal:
+          self.call_handler("on_timeout_"+name)
       tm=QTimer()
       tm.timeout.connect(on_timeout)
       tm.start(int(interval*1000))
@@ -242,7 +244,11 @@ class SimGuiApp(QApplication):
       r2=gi2.mapRectToParent(r2)
       return r1.intersects(r2)
     def msg_box(self, text):
-      QMessageBox.information(self.wid, "Info", str(text))
+      self.in_modal=True
+      try:
+        QMessageBox.information(self.wid, "Info", str(text))
+      finally:
+        self.in_modal=False
     def play_wav(self, path):
       wo=WaveObject.from_wave_file(path)
       wo.play()
