@@ -175,7 +175,8 @@ class SimGuiApp(QApplication):
       gi.setPos(x, y)
       self.add_gi(name, gi)
     def add_gi_rect(self, name, x, y, w, h, color):
-      gi=QGraphicsRectItem(x, y, w, h)
+      gi=QGraphicsRectItem(0, 0, w, h)
+      gi.setPos(x, y)
       br=QBrush(QColor(color))
       gi.setBrush(br)
       self.add_gi(name, gi)
