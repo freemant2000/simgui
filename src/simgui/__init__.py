@@ -196,6 +196,8 @@ class SimGuiApp(QApplication):
     def get_gi_y(self, name):
       gi=self.get_gi(name)
       return gi.pos().y()
+    def gi_exists(self, name):
+      return  name in self.gi_dict
     def get_gi(self, name):
       if name in self.gi_dict:
         return self.gi_dict[name]
@@ -333,6 +335,9 @@ def stop_timer(name):
 
 def make_unique_name(prefix):
   return sgapp.make_unique_name(prefix)
+
+def gi_exists(name):
+  return sgapp.gi_exists(name)
 
 def are_gi_overlap(n1, n2):
   return sgapp.are_gi_overlap(n1, n2)
