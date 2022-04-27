@@ -3,12 +3,20 @@ from simgui import *
 
 sx=6
 bullets=[]
+aliens=[]
 
 def on_ready():
   add_graphics_view(400, 300)
-  add_gi_img("a1", 100, 30, 50, 30, "alien.png")
+  make_aliens()
   add_gi_img("c", 200, 240, 30, 40, "cannon.png")
   start_timer("t1", 0.05)
+
+def make_aliens():
+  for j in range(2):
+    for i in range(3):
+      an=make_unique_name("a")
+      aliens.append(an)
+      add_gi_img(an, 100+i*80, 20+j*50, 50, 30, "alien.png")
 
 def on_timeout_t1():
   move_bullet()
@@ -16,13 +24,12 @@ def on_timeout_t1():
   move_alien()
 
 def move_alien():
-  if gi_exists("a1"):
-    bounce_alien()
-    x=get_gi_x("a1")+sx
-    y=get_gi_y("a1")
-    set_gi_pos("a1", x, y)
-    capture_cannon()
-
+  bounce_alien()
+  for an in aliens:
+    x=get_gi_x(an)+sx
+    y=get_gi_y(an)
+    set_gi_pos(an, x, y)
+    
 def capture_cannon():
   if are_gi_overlap("a1", "c"):
     play_wav("gameover.wav")
@@ -31,19 +38,23 @@ def capture_cannon():
 
 def bounce_alien():  
   global sx
-  next_right_x=get_gi_x("a1")+50+sx
-  if next_right_x>=400:
-    sx=-abs(sx)
-    move_alien_down()
-  next_left_x=get_gi_x("a1")+sx
-  if next_left_x<0:
-    sx=abs(sx)
-    move_alien_down()
+  for an in aliens:
+    next_right_x=get_gi_x(an)+50+sx
+    if next_right_x>=400:
+      sx=-abs(sx)
+      move_alien_down()
+      break
+    next_left_x=get_gi_x(an)+sx
+    if next_left_x<0:
+      sx=abs(sx)
+      move_alien_down()
+      break
 
 def move_alien_down():    
-  x=get_gi_x("a1")
-  y=get_gi_y("a1")+30
-  set_gi_pos("a1", x, y)
+  for an in aliens:
+    x=get_gi_x(an)
+    y=get_gi_y(an)+30
+    set_gi_pos(an, x, y)
 
 def move_bullet():
   i=0
@@ -62,13 +73,21 @@ def kill_alien():
   if gi_exists("a1"):
     for n in bullets:
       if are_gi_overlap(n, "a1"):
-        ex=get_gi_x("a1")+50/2-60/2
-        ey=get_gi_y("a1")+30/2-60/2
-        add_gi_img("e", ex, ey, 60, 60, "explosion.png")
+        show_explosion()
         remove_gi(n)
         remove_gi("a1")
         bullets.remove(n)
         break
+
+def show_explosion():
+  ex=get_gi_x("a1")+50/2-60/2
+  ey=get_gi_y("a1")+30/2-60/2
+  en=make_unique_name("e")
+  add_gi_img(en, ex, ey, 60, 60, "explosion.png")
+  send_data_to_future(en, 0.1)
+
+def on_data_from_past(data):
+  remove_gi(data)
 
 def on_key():
   move_cannon()
