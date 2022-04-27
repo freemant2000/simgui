@@ -55,10 +55,13 @@ class SimGuiApp(QApplication):
       self.op=build_opener()
       self.op.addheaders=[("User-agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")]
       self.op.cache={}
-    def call_handler(self, fn):
+    def call_handler(self, fn, data=None):
         handler=self.mod.get(fn)
         if handler:
-          handler()
+          if data:
+            handler(data)
+          else:
+            handler()
     def add_label(self, name, text, **kwargs):
         lbl=QLabel(str(text))
         self.add_wid(name, lbl, **kwargs)
@@ -238,6 +241,13 @@ class SimGuiApp(QApplication):
       self.timer_dict[name]=tm
     def stop_timer(self, name):
       self.timer_dict[name].stop()
+    def send_data_to_future(self, data, interval):
+      def on_timeout():
+        tm.stop()
+        self.call_handler("on_data_from_past", data)
+      tm=QTimer()
+      tm.timeout.connect(on_timeout)
+      tm.start(int(interval*1000))
     def are_gi_overlap(self, n1, n2):
       gi1=self.get_gi(n1)
       gi2=self.get_gi(n2)
@@ -350,3 +360,6 @@ def quit():
 
 def play_wav(path):
   sgapp.play_wav(path)
+
+def send_data_to_future(data, interval):
+  sgapp.send_data_to_future(data, interval)
