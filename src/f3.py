@@ -1,9 +1,14 @@
 from simgui import *
-
+w=100
+h=30
 def on_ready():
   add_graphics_view(400, 300)
-  add_gi_rect("r1", 200, 70, 100, 20, "yellow")
-  print(gi_exists("r1"))
-  print(gi_exists("r2"))
+  add_gi_rect("r1", 200, 70, w, h, "blue")
+
+def on_key():
+  add_gi_rect("r2", 
+    get_gi_x("r1")+w/2-20/2,\
+    get_gi_y("r1")+h/2-10/2,\
+    20, 10, "yellow")
 
 start(globals())
