@@ -12,11 +12,10 @@ def on_ready():
   start_timer("t1", 0.05)
 
 def make_aliens():
-  for j in range(2):
-    for i in range(3):
+  for a in range(0, 3):
+    for b in range(0, 2):
       an=make_unique_name("a")
-      aliens.append(an)
-      add_gi_img(an, 100+i*80, 20+j*50, 50, 30, "alien.png")
+      add_gi_img(an, 100+a*80, 20+b*50, 50, 30, "alien.png")
 
 def on_timeout_t1():
   move_bullet()
