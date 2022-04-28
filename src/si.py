@@ -15,6 +15,7 @@ def make_aliens():
   for a in range(0, 3):
     for b in range(0, 2):
       an=make_unique_name("a")
+      aliens.append(an)
       add_gi_img(an, 100+a*80, 20+b*50, 50, 30, "alien.png")
 
 def on_timeout_t1():
@@ -28,12 +29,14 @@ def move_alien():
     x=get_gi_x(an)+sx
     y=get_gi_y(an)
     set_gi_pos(an, x, y)
+  capture_cannon()
     
 def capture_cannon():
-  if are_gi_overlap("a1", "c"):
-    play_wav("gameover.wav")
-    msg_box("Game Over")
-    quit()
+  for an in aliens:
+    if are_gi_overlap(an, "c"):
+      play_wav("gameover.wav")
+      msg_box("Game Over")
+      quit()
 
 def bounce_alien():  
   global sx
@@ -69,18 +72,22 @@ def move_bullet():
       i=i+1
 
 def kill_alien():
-  if gi_exists("a1"):
+  for an in aliens:
+    hit=False
     for n in bullets:
-      if are_gi_overlap(n, "a1"):
-        show_explosion()
-        remove_gi(n)
-        remove_gi("a1")
-        bullets.remove(n)
+      if are_gi_overlap(n, an):
+        hit=True
         break
+    if hit:
+      show_explosion(an)
+      remove_gi(n)
+      remove_gi(an)
+      bullets.remove(n)
+      aliens.remove(an)
 
-def show_explosion():
-  ex=get_gi_x("a1")+50/2-60/2
-  ey=get_gi_y("a1")+30/2-60/2
+def show_explosion(an):
+  ex=get_gi_x(an)+50/2-60/2
+  ey=get_gi_y(an)+30/2-60/2
   en=make_unique_name("e")
   add_gi_img(en, ex, ey, 60, 60, "explosion.png")
   send_data_to_future(en, 0.1)
