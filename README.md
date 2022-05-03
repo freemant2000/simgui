@@ -1,4 +1,4 @@
-# line-ui
+# simgui
 A simple GUI API (wrapper around PySide2) for Python learners to build simple yet interesting event driven apps.
 
 ![a sample GUI app](images/simgui.png)
