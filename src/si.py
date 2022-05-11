@@ -116,4 +116,4 @@ def open_fire():
     add_gi_img(n, x, y, 10, 15, "bullet.png")
 
 
-start(globals())
+start()

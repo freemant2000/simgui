@@ -56,4 +56,4 @@ def on_key():
   elif k=="x":
     set_gi_pos("s", get_gi_x("s"), get_gi_y("s")+5)
 
-start(globals())
+start()

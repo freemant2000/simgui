@@ -268,8 +268,10 @@ class SimGuiApp(QApplication):
 
 sgapp=SimGuiApp()
 
-def start(mod):
-    sgapp.start(mod)
+# the mod parameter is no longer needed
+def start(mod=None):
+  import __main__
+  sgapp.start(vars(__main__))
 
 def add_label(name, text, **kwargs):
     sgapp.add_label(name, text, **kwargs)

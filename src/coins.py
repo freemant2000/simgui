@@ -107,4 +107,4 @@ def move_coins():
     y=get_gi_y(n)
     set_gi_pos(n, x, y+5)
 
-start(globals())
+start()
