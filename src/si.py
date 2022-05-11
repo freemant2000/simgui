@@ -1,4 +1,3 @@
-from os import kill
 from simgui import *
 
 sx=6

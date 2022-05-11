@@ -37,4 +37,4 @@ Here is a sample GUI program.
     def on_index_changed_cb1():
         print(get_combo_text("cb1")+" is selected")
 
-    start(globals())  # must do this to kick start the app with the UI
+    start()  # must do this to kick start the app with the UI
