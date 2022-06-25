@@ -1,15 +1,25 @@
-xs1=[7, 4, 12, 18, 13, 21]
-xs2=[3, 2, 5]
-i=0
-while i<len(xs1):
-  can_div=False
-  for b in xs2:
-    if xs1[i]%b==0:
-      can_div=True
-      break
-  if can_div:
-    xs1.pop(i)
-  else:
-    i=i+1
-print(xs1)
+from simgui import *
 
+r=1
+c=2
+w=30
+h=30
+
+def on_ready():
+  add_graphics_view(400, 300)
+  add_gi_img("pm", c*w, r*h, w, h, "pacman.png")
+
+def on_key():
+  global r, c
+  k=get_key()
+  if k=="Right":
+    c=c+1
+  elif k=="Left":
+    c=c-1
+  elif k=="Up":
+    r=r-1
+  elif k=="Down":
+    r=r+1
+  set_gi_pos("pm", c*w, r*h)
+
+start()

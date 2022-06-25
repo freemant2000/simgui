@@ -162,6 +162,15 @@ class SimGuiApp(QApplication):
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
+      pm2=self.load_pixmap(img_url_or_file, w, h)
+      gi=QGraphicsPixmapItem(pm2)
+      gi.setPos(x, y)
+      self.add_gi(name, gi)
+    def set_gi_img(self, name, img_url_or_file):
+      pm2=self.load_pixmap(img_url_or_file, w, h)
+      gi=self.get_gi(name)
+      gi.setPixmap(pm2)
+    def load_pixmap(self, img_url_or_file, w, h):
       if img_url_or_file.find("://")>0:
         data=self.fetch_web_data(img_url_or_file)
         pm=QPixmap()
@@ -174,9 +183,8 @@ class SimGuiApp(QApplication):
         else:
           raise ValueError(f"File {img_url_or_file} not found")
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
-      gi=QGraphicsPixmapItem(pm2)
-      gi.setPos(x, y)
-      self.add_gi(name, gi)
+      return pm2
+
     def add_gi_rect(self, name, x, y, w, h, color):
       gi=QGraphicsRectItem(0, 0, w, h)
       gi.setPos(x, y)
@@ -338,6 +346,9 @@ def get_gi_y(name):
 
 def set_gi_pos(name, x, y):
   sgapp.set_gi_pos(name, x, y)
+
+def set_gi_img(name, img_url_or_file):
+  sgapp.set_gi_img(name, img_url_or_file)
 
 def start_timer(name, interval):
   sgapp.start_timer(name, interval)
