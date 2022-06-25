@@ -3,8 +3,12 @@ from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
 from PySide2.QtCore import Qt, QTimer, QEvent
 from urllib.request import build_opener
-from simpleaudio import WaveObject
 from random import randint
+
+try:
+  from simpleaudio import WaveObject
+except:
+  from .mockaudio import WaveObject  
 
 class SimGraphicsView(QGraphicsView):
   def __init__(self, scene, key_handler):
