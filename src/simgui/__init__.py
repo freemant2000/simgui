@@ -171,8 +171,9 @@ class SimGuiApp(QApplication):
       gi.setPos(x, y)
       self.add_gi(name, gi)
     def set_gi_img(self, name, img_url_or_file):
-      pm2=self.load_pixmap(img_url_or_file, w, h)
       gi=self.get_gi(name)
+      pm=gi.pixmap()
+      pm2=self.load_pixmap(img_url_or_file, pm.width(), pm.height())
       gi.setPixmap(pm2)
     def load_pixmap(self, img_url_or_file, w, h):
       if img_url_or_file.find("://")>0:

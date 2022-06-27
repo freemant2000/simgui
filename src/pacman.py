@@ -14,6 +14,7 @@ def on_key():
   k=get_key()
   if k=="Right":
     c=c+1
+    set_gi_img("pm", "pacman-2.png")
   elif k=="Left":
     c=c-1
   elif k=="Up":
