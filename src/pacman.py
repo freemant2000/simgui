@@ -1,26 +1,30 @@
+from board import add_img_in_cell, move_img_to_cell, get_next_loc
+from walls import can_move
 from simgui import *
 
-r=1
-c=2
-w=30
-h=30
+r, c=0, 10
+facing, look="r", 0
+is_powered_up=True
 
-def on_ready():
-  add_graphics_view(400, 300)
-  add_gi_img("pm", c*w, r*h, w, h, "pacman.png")
+def get_img_name():
+  return "pacman-"+facing+str(look)+".png"
 
-def on_key():
+def make_pacman():
+  add_img_in_cell("pm", r, c, get_img_name())
+
+def set_direction(d):
+  global facing, look
+  facing, look=d, 0
+
+def change_look():
+  global look
+  look=look+1
+  if look>1:
+    look=0
+  set_gi_img("pm", get_img_name())    
+
+def move_pacman():
   global r, c
-  k=get_key()
-  if k=="Right":
-    c=c+1
-    set_gi_img("pm", "pacman-2.png")
-  elif k=="Left":
-    c=c-1
-  elif k=="Up":
-    r=r-1
-  elif k=="Down":
-    r=r+1
-  set_gi_pos("pm", c*w, r*h)
-
-start()
+  if can_move(r, c,  facing):
+    r, c=get_next_loc(r, c, facing)
+    move_img_to_cell("pm", r, c)
