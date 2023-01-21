@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem
 from PySide2.QtGui import QPixmap, QBrush, QColor
 from PySide2.QtCore import Qt, QTimer, QEvent
 from urllib.request import build_opener
@@ -16,12 +16,16 @@ class SimGraphicsView(QGraphicsView):
       self.key_handler=key_handler
   def keyPressEvent(self, event):
     self.key_handler(event)
+  def keyReleaseEvent(self, event):
+    self.key_handler(event)
 
 class MyWidget(QWidget):
   def __init__(self, key_handler):
       super().__init__()
       self.key_handler=key_handler
   def keyPressEvent(self, event):
+    self.key_handler(event)
+  def keyReleaseEvent(self, event):
     self.key_handler(event)
 
 class SimGuiApp(QApplication):
@@ -154,8 +158,13 @@ class SimGuiApp(QApplication):
     def set_input_text(self, name, text):
       self.get_wid(name).setText(str(text))
     def on_key(self, event):
-      self.key_ev=event
-      self.call_handler("on_key")      
+      evt=event.type()
+      if evt==QEvent.KeyPress:
+        self.key_ev=event
+        self.call_handler("on_key")
+      elif evt==QEvent.KeyRelease:
+        self.key_ev=event
+        self.call_handler("on_key_up")
     def add_graphics_view(self, min_w, min_h):
         if self.gs:
           raise ValueError("Only one graphics view can be added")
@@ -166,6 +175,16 @@ class SimGuiApp(QApplication):
         self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
+      pm2=self.load_pixmap(img_url_or_file, w, h)
+      gi=QGraphicsPixmapItem(pm2)
+      gi.setPos(x, y)
+      self.add_gi(name, gi)
+    def set_gi_img(self, name, img_url_or_file):
+      gi=self.get_gi(name)
+      pm=gi.pixmap()
+      pm2=self.load_pixmap(img_url_or_file, pm.width(), pm.height())
+      gi.setPixmap(pm2)
+    def load_pixmap(self, img_url_or_file, w, h):
       if img_url_or_file.find("://")>0:
         data=self.fetch_web_data(img_url_or_file)
         pm=QPixmap()
@@ -178,15 +197,30 @@ class SimGuiApp(QApplication):
         else:
           raise ValueError(f"File {img_url_or_file} not found")
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
-      gi=QGraphicsPixmapItem(pm2)
-      gi.setPos(x, y)
-      self.add_gi(name, gi)
+      return pm2
+
     def add_gi_rect(self, name, x, y, w, h, color):
       gi=QGraphicsRectItem(0, 0, w, h)
       gi.setPos(x, y)
       br=QBrush(QColor(color))
       gi.setBrush(br)
       self.add_gi(name, gi)
+
+    def set_gi_rect_size(self, name, w, h):
+      gi=self.get_gi(name)
+      gi.setRect(0, 0, w, h)
+
+    def add_gi_cir(self, name, x, y, r, color):
+      gi=QGraphicsEllipseItem(0, 0, r, r)
+      gi.setPos(x, y)
+      br=QBrush(QColor(color))
+      gi.setBrush(br)
+      self.add_gi(name, gi)
+
+    def set_gi_cir_radius(self, name, r):
+      gi=self.get_gi(name)
+      gi.setRect(0, 0, r, r)
+
     def add_gi(self, name, gi):
       if self.gs==None:
         raise ValueError("Must add a graphics scene first")
@@ -331,6 +365,9 @@ def add_gi_img(name, x, y, w, h, img_url):
 def add_gi_rect(name, x, y, w, h, color):
   sgapp.add_gi_rect(name, x, y, w, h, color)
 
+def add_gi_cir(name, x, y, r, color):
+  sgapp.add_gi_cir(name, x, y, r, color)
+
 def remove_gi(name):
   sgapp.remove_gi(name)
 
@@ -345,6 +382,15 @@ def get_gi_y(name):
 
 def set_gi_pos(name, x, y):
   sgapp.set_gi_pos(name, x, y)
+
+def set_gi_img(name, img_url_or_file):
+  sgapp.set_gi_img(name, img_url_or_file)
+
+def set_gi_rect_size(name, w, h):
+  sgapp.set_gi_rect_size(name, w, h)
+
+def set_gi_cir_radius(name, r):
+  sgapp.set_gi_cir_radius(name, r)
 
 def start_timer(name, interval):
   sgapp.start_timer(name, interval)

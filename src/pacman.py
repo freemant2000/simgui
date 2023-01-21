@@ -5,6 +5,7 @@ from simgui import *
 #r, c=1, 2
 r, c=3, 2
 facing, look="r", 0
+is_powered_up=True
 
 def get_img_name():
   return "pacman-"+facing+str(look)+".png"
@@ -21,11 +22,10 @@ def change_look():
   look=look+1
   if look>1:
     look=0
-  #set_gi_img("pm", get_img_name())  
+  set_gi_img("pm", get_img_name())    
 
 def move_pacman():
   global r, c
   if can_move(r, c,  facing):
     r, c=get_next_loc(r, c, facing)
     move_img_to_cell("pm", r, c)
-

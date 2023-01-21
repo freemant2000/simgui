@@ -11,8 +11,7 @@ def cnt_y(r):
   return r*h+mg
 
 def add_img_in_cell(item_name, r, c, img_name):
-  add_gi_img(item_name, cnt_x(c), cnt_y(r), \
-             cnt_w, cnt_h, img_name)
+  add_gi_img(item_name, cnt_x(c), cnt_y(r), cnt_w, cnt_h, img_name)
 
 def move_img_to_cell(item_name, r, c):
   set_gi_pos(item_name, cnt_x(c), cnt_y(r))
