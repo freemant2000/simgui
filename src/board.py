@@ -35,5 +35,8 @@ def get_next_loc(r, c, d):
   elif d=="r":
     nc=c+1
   return (nr, nc)
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 9f35acfc73be5237cd2c4aec7ce9b5dbdf4f2a27

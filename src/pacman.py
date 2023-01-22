@@ -3,7 +3,8 @@ from walls import can_move
 from simgui import *
 from pellets import pellets, eat_pellet
 
-r, c=0, 10
+#r, c=1, 2
+r, c=3, 2
 facing, look="r", 0
 is_powered_up=False
 score=0

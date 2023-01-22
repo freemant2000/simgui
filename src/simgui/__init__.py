@@ -74,12 +74,12 @@ class SimGuiApp(QApplication):
         lbl=QLabel(str(text))
         self.add_wid(name, lbl, **kwargs)
     def add_button(self, name, text, **kwargs):
-        btn=QPushButton(text)
+        btn=QPushButton(str(text))
         def on_click():
           self.call_handler("on_click_"+name)
         btn.clicked.connect(on_click)
         self.add_wid(name, btn, **kwargs)
-    def set_label_text(self, name, text):
+    def set_wid_text(self, name, text):
       self.get_wid(name).setText(str(text))
     def set_wid_max_size(self, name, w, h):
       wid=self.get_wid(name)
@@ -315,7 +315,7 @@ def add_label(name, text, **kwargs):
     sgapp.add_label(name, text, **kwargs)
 
 def set_label_text(name, text):
-    sgapp.set_label_text(name, text)
+    sgapp.set_wid_text(name, text)
 
 def set_label_img(name, img_url):
     sgapp.set_label_img(name, img_url)
@@ -328,6 +328,9 @@ def set_wid_max_size(name, w, h):
 
 def add_button(name, text, **kwargs):
     sgapp.add_button(name, text, **kwargs)    
+
+def set_button_text(name, text):
+    sgapp.set_wid_text(name, text)
 
 def add_input(name, **kwargs):
     sgapp.add_input(name, **kwargs)    
