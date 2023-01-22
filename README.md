@@ -9,7 +9,7 @@ It provides the following features:
 * Place such widgets on a grid layout easily.
 * All is done using simple function calls (no need to understand classes and objects).
 
-With these a Python learner can make GUI apps like: ..., etc.
+With these a Python learner can make GUI apps like: pacman, spade invaders, etc.
 
 ## How to use
 Here is a sample GUI program.

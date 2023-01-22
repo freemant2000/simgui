@@ -3,6 +3,11 @@ from simgui import *
 w, h=30, 30
 mg=3
 cnt_w, cnt_h=w-2*mg, h-2*mg
+board_w, board_h=13, 10
+max_r, max_c=board_h-1, board_w-1
+
+def get_cell_center(r, c):
+  return (c*w+w//2, r*h+h//2)
 
 def cnt_x(c):
   return c*w+mg
@@ -31,4 +36,4 @@ def get_next_loc(r, c, d):
     nc=c+1
   return (nr, nc)
 
-print(get_next_loc(2, 1, "l"))
+

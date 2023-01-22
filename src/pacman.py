@@ -1,10 +1,12 @@
 from board import add_img_in_cell, move_img_to_cell, get_next_loc
 from walls import can_move
 from simgui import *
+from pellets import pellets, eat_pellet
 
 r, c=0, 10
 facing, look="r", 0
-is_powered_up=True
+is_powered_up=False
+score=0
 
 def get_img_name():
   return "pacman-"+facing+str(look)+".png"
@@ -24,7 +26,10 @@ def change_look():
   set_gi_img("pm", get_img_name())    
 
 def move_pacman():
-  global r, c
+  global r, c, score
   if can_move(r, c,  facing):
     r, c=get_next_loc(r, c, facing)
     move_img_to_cell("pm", r, c)
+    if pellets[r][c]>0:
+      score=score+1
+      eat_pellet(r, c)
