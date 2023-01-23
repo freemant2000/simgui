@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem
-from PySide2.QtGui import QPixmap, QBrush, QColor
-from PySide2.QtCore import Qt, QTimer, QEvent
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPolygonItem
+from PySide2.QtGui import QPixmap, QBrush, QColor, QPolygonF
+from PySide2.QtCore import Qt, QTimer, QEvent, QPointF
 from urllib.request import build_opener
 from random import randint
 
@@ -165,14 +165,17 @@ class SimGuiApp(QApplication):
       elif evt==QEvent.KeyRelease:
         self.key_ev=event
         self.call_handler("on_key_up")
-    def add_graphics_view(self, min_w, min_h):
+    def add_graphics_view(self, min_w, min_h, scene_w=None, scene_h=None):
         if self.gs:
           raise ValueError("Only one graphics view can be added")
         self.gs=QGraphicsScene()
         self.gv=SimGraphicsView(self.gs, self.on_key)
         self.gv.setMinimumSize(min_w, min_h)
-        #there is a 1 pixel margin hard coded
-        self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
+        if scene_w and scene_h:
+          self.gv.setSceneRect(0, 0, scene_w, scene_h)
+        else:
+          #there is a 1 pixel margin hard coded
+          self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
       pm2=self.load_pixmap(img_url_or_file, w, h)
@@ -201,6 +204,15 @@ class SimGuiApp(QApplication):
 
     def add_gi_rect(self, name, x, y, w, h, color):
       gi=QGraphicsRectItem(0, 0, w, h)
+      gi.setPos(x, y)
+      br=QBrush(QColor(color))
+      gi.setBrush(br)
+      self.add_gi(name, gi)
+
+    def add_gi_polygon(self, name, points, color):
+      x, y=points[0]
+      pts=[QPointF(x2-x, y2-y) for (x2, y2) in points]
+      gi=QGraphicsPolygonItem(QPolygonF(pts))
       gi.setPos(x, y)
       br=QBrush(QColor(color))
       gi.setBrush(br)
@@ -356,8 +368,8 @@ def add_combo_item(name, item):
 def get_combo_text(name):
   return sgapp.get_combo_text(name)
 
-def add_graphics_view(min_w, min_h):
-  sgapp.add_graphics_view(min_w, min_h)
+def add_graphics_view(min_w, min_h, scene_w=None, scene_h=None):
+  sgapp.add_graphics_view(min_w, min_h, scene_w, scene_h)
 
 def add_gi_img(name, x, y, w, h, img_url):
   sgapp.add_gi_img(name, x, y, w, h, img_url)
@@ -367,6 +379,9 @@ def add_gi_rect(name, x, y, w, h, color):
 
 def add_gi_cir(name, x, y, r, color):
   sgapp.add_gi_cir(name, x, y, r, color)
+
+def add_gi_polygon(name, points, color):
+  sgapp.add_gi_polygon(name, points, color)
 
 def remove_gi(name):
   sgapp.remove_gi(name)
