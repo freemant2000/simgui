@@ -86,7 +86,8 @@ class SimGuiApp(QApplication):
       wid.setMaximumSize(w, h)
     def set_wid_color(self, name, color):
       wid=self.get_wid(name)
-      wid.setStyleSheet(f"background-color: {color}")
+      c=self.get_css_color(color)
+      wid.setStyleSheet(f"background-color: {c}")
     def fetch_web_data(self, url):
       if url in self.op.cache:
         return self.op.cache[url]
@@ -205,16 +206,25 @@ class SimGuiApp(QApplication):
     def add_gi_rect(self, name, x, y, w, h, color):
       gi=QGraphicsRectItem(0, 0, w, h)
       gi.setPos(x, y)
-      br=QBrush(QColor(color))
-      gi.setBrush(br)
+      self.set_gi_brush(gi, color)
       self.add_gi(name, gi)
-
+    def make_color(self, color):
+      if isinstance(color, tuple):
+        if len(color)==3:
+          r, g, b=color
+          return QColor(r, g, b)
+      else:
+          return QColor(color)
+    def get_css_color(self, color):
+      qc=self.make_color(color)
+      n=qc.name(QColor.HexRgb)
+      return n
     def add_gi_polygon(self, name, points, color):
       x, y=points[0]
       pts=[QPointF(x2-x, y2-y) for (x2, y2) in points]
       gi=QGraphicsPolygonItem(QPolygonF(pts))
       gi.setPos(x, y)
-      br=QBrush(QColor(color))
+      br=QBrush(self.make_color(color))
       gi.setBrush(br)
       self.add_gi(name, gi)
 
@@ -225,7 +235,7 @@ class SimGuiApp(QApplication):
     def add_gi_cir(self, name, x, y, r, color):
       gi=QGraphicsEllipseItem(0, 0, r, r)
       gi.setPos(x, y)
-      br=QBrush(QColor(color))
+      br=QBrush(self.make_color(color))
       gi.setBrush(br)
       self.add_gi(name, gi)
 
@@ -249,6 +259,12 @@ class SimGuiApp(QApplication):
     def get_gi_y(self, name):
       gi=self.get_gi(name)
       return gi.pos().y()
+    def set_gi_color(self, name, color):    
+      gi=self.get_gi(name)
+      self.set_gi_brush(gi, color)
+    def set_gi_brush(self, gi, color):
+      br=QBrush(self.make_color(color))
+      gi.setBrush(br)
     def gi_exists(self, name):
       return  name in self.gi_dict
     def get_gi(self, name):
@@ -400,6 +416,9 @@ def set_gi_pos(name, x, y):
 
 def set_gi_img(name, img_url_or_file):
   sgapp.set_gi_img(name, img_url_or_file)
+
+def set_gi_color(name, color):
+  sgapp.set_gi_color(name, color)
 
 def set_gi_rect_size(name, w, h):
   sgapp.set_gi_rect_size(name, w, h)
