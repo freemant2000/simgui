@@ -19,7 +19,8 @@ def make_color(color):
       return QColor(color)
 
 class GIWrapper:
-  def __init__(self, gi):
+  def __init__(self, sgapp, gi):
+    self.sgapp=sgapp
     self.gi=gi
   def set_gi_pos(self, x, y):
     self.gi.setPos(x, y)
@@ -30,7 +31,24 @@ class GIWrapper:
   def set_gi_color(self, color):    
     br=QBrush(make_color(color))
     self.gi.setBrush(br)
-
+  def set_gi_img(self, img_url_or_file):
+    pm=self.gi.pixmap()
+    pm2=self.sgapp.load_pixmap(img_url_or_file, pm.width(), pm.height())
+    self.gi.setPixmap(pm2)
+  def set_gi_rect_size(self, w, h):
+    self.gi.setRect(0, 0, w, h)
+  def set_gi_cir_radius(self, r):
+    self.gi.setRect(0, 0, r, r)
+  def remove_gi(self):
+    self.sgapp.gs.removeItem(self.gi)
+  def get_brect_in_parent(self):
+    r=self.gi.boundingRect()
+    r=self.gi.mapRectToParent(r)
+    return r
+  def are_gi_overlap(self, giw):
+    r1=self.get_brect_in_parent()
+    r2=giw.get_brect_in_parent()
+    return r1.intersects(r2)
 
 class SimGraphicsView(QGraphicsView):
   def __init__(self, scene, key_handler):
@@ -206,14 +224,10 @@ class SimGuiApp(QApplication):
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
       pm2=self.load_pixmap(img_url_or_file, w, h)
       gi=QGraphicsPixmapItem(pm2)
-      gi.setPos(x, y)
-      self.add_gi(name, gi)
-      return gi
-    def set_gi_img(self, name, img_url_or_file):
-      gi=self.get_gi(name)
-      pm=gi.pixmap()
-      pm2=self.load_pixmap(img_url_or_file, pm.width(), pm.height())
-      gi.setPixmap(pm2)
+      giw=GIWrapper(self, gi)
+      giw.set_gi_pos(x, y)
+      self.add_gi(name, giw)
+      return giw
     def load_pixmap(self, img_url_or_file, w, h):
       if img_url_or_file.find("://")>0:
         data=self.fetch_web_data(img_url_or_file)
@@ -228,13 +242,16 @@ class SimGuiApp(QApplication):
           raise ValueError(f"File {img_url_or_file} not found")
       pm2=pm.scaled(w, h, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
       return pm2
-
+    def set_gi_img(self, name, img_url_or_file):
+      giw=self.get_gi(name)
+      giw.set_gi_img(img_url_or_file)
     def add_gi_rect(self, name, x, y, w, h, color):
       gi=QGraphicsRectItem(0, 0, w, h)
-      gi.setPos(x, y)
-      self.set_gi_brush(gi, color)
-      self.add_gi(name, gi)
-      return gi
+      giw=GIWrapper(self, gi)
+      giw.set_gi_pos(x, y)
+      giw.set_gi_color(color)
+      self.add_gi(name, giw)
+      return giw
     def get_css_color(self, color):
       qc=make_color(color)
       n=qc.name(QColor.HexRgb)
@@ -243,51 +260,44 @@ class SimGuiApp(QApplication):
       x, y=points[0]
       pts=[QPointF(x2-x, y2-y) for (x2, y2) in points]
       gi=QGraphicsPolygonItem(QPolygonF(pts))
-      gi.setPos(x, y)
-      br=QBrush(make_color(color))
-      gi.setBrush(br)
-      self.add_gi(name, gi)
-      return gi
-
+      giw=GIWrapper(self, gi)
+      giw.set_gi_pos(x, y)
+      giw.set_gi_color(color)      
+      self.add_gi(name, giw)
+      return giw
     def set_gi_rect_size(self, name, w, h):
-      gi=self.get_gi(name)
-      gi.setRect(0, 0, w, h)
-
+      giw=self.get_gi(name)
+      giw.set_gi_rect_size(w, h)
     def add_gi_cir(self, name, x, y, r, color):
       gi=QGraphicsEllipseItem(0, 0, r, r)
-      gi.setPos(x, y)
-      br=QBrush(make_color(color))
-      gi.setBrush(br)
-      self.add_gi(name, gi)
-      return gi
-
+      giw=GIWrapper(self, gi)
+      giw.set_gi_pos(x, y)
+      giw.set_gi_color(color)   
+      self.add_gi(name, giw)
+      return giw
     def set_gi_cir_radius(self, name, r):
-      gi=self.get_gi(name)
-      gi.setRect(0, 0, r, r)
-
-    def add_gi(self, name, gi):
+      giw=self.get_gi(name)
+      giw.set_gi_cir_radius(r)
+    def add_gi(self, name, giw):
       if self.gs==None:
         raise ValueError("Must add a graphics scene first")
       if name:
         if name in self.gi_dict:
           raise ValueError(f"Graphics item {name} already exists")
-        self.gi_dict[name]=gi
-        self.gs.addItem(gi)
+        self.gi_dict[name]=giw
+        self.gs.addItem(giw.gi)
     def set_gi_pos(self, name, x, y):
-      gi=self.get_gi(name)
-      gi.setPos(x, y)
+      giw=self.get_gi(name)
+      giw.set_gi_pos(x, y)
     def get_gi_x(self, name):
-      gi=self.get_gi(name)
-      return gi.pos().x()
+      giw=self.get_gi(name)
+      return giw.get_gi_x()
     def get_gi_y(self, name):
-      gi=self.get_gi(name)
-      return gi.pos().y()
+      giw=self.get_gi(name)
+      return giw.get_gi_y()
     def set_gi_color(self, name, color):    
-      gi=self.get_gi(name)
-      self.set_gi_brush(gi, color)
-    def set_gi_brush(self, gi, color):
-      br=QBrush(make_color(color))
-      gi.setBrush(br)
+      giw=self.get_gi(name)
+      giw.set_gi_color(color)
     def gi_exists(self, name):
       return  name in self.gi_dict
     def get_gi(self, name):
@@ -298,9 +308,9 @@ class SimGuiApp(QApplication):
     def remove_gi(self, name):
       if self.gs==None:
         raise ValueError("Must add a graphics scene first")
-      gi=self.get_gi(name)
+      giw=self.get_gi(name)
       del self.gi_dict[name]
-      self.gs.removeItem(gi)
+      giw.remove_gi()
     def make_unique_name(self, prefix):
       while True:
         name=prefix+str(randint(0, 65535))
@@ -338,13 +348,9 @@ class SimGuiApp(QApplication):
       tm.timeout.connect(on_timeout)
       tm.start(int(interval*1000))
     def are_gi_overlap(self, n1, n2):
-      gi1=self.get_gi(n1)
-      gi2=self.get_gi(n2)
-      r1=gi1.boundingRect()
-      r1=gi1.mapRectToParent(r1)
-      r2=gi2.boundingRect()
-      r2=gi2.mapRectToParent(r2)
-      return r1.intersects(r2)
+      giw1=self.get_gi(n1)
+      giw2=self.get_gi(n2)
+      return giw1.are_gi_overlap(giw2)
     def msg_box(self, text):
       self.in_modal=True
       try:
