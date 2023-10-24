@@ -81,6 +81,9 @@ class SimGuiApp(QApplication):
         self.add_wid(name, btn, **kwargs)
     def set_wid_text(self, name, text):
       self.get_wid(name).setText(str(text))
+    def set_wid_min_size(self, name, w, h):
+      wid=self.get_wid(name)
+      wid.setMinimumSize(w, h)
     def set_wid_max_size(self, name, w, h):
       wid=self.get_wid(name)
       wid.setMaximumSize(w, h)
@@ -334,6 +337,9 @@ def set_label_img(name, img_url):
 
 def set_wid_color(name, color):
     sgapp.set_wid_color(name, color)
+
+def set_wid_min_size(name, w, h):
+    sgapp.set_wid_min_size(name, w, h)
 
 def set_wid_max_size(name, w, h):
     sgapp.set_wid_max_size(name, w, h)
