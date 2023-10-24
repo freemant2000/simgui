@@ -285,7 +285,7 @@ class SimGuiApp(QApplication):
         if name in self.gi_dict:
           raise ValueError(f"Graphics item {name} already exists")
         self.gi_dict[name]=giw
-        self.gs.addItem(giw.gi)
+      self.gs.addItem(giw.gi)
     def set_gi_pos(self, name, x, y):
       giw=self.get_gi(name)
       giw.set_gi_pos(x, y)
@@ -420,16 +420,16 @@ def add_graphics_view(min_w, min_h, scene_w=None, scene_h=None):
   sgapp.add_graphics_view(min_w, min_h, scene_w, scene_h)
 
 def add_gi_img(name, x, y, w, h, img_url):
-  sgapp.add_gi_img(name, x, y, w, h, img_url)
+  return sgapp.add_gi_img(name, x, y, w, h, img_url)
 
 def add_gi_rect(name, x, y, w, h, color):
-  sgapp.add_gi_rect(name, x, y, w, h, color)
+  return sgapp.add_gi_rect(name, x, y, w, h, color)
 
 def add_gi_cir(name, x, y, r, color):
-  sgapp.add_gi_cir(name, x, y, r, color)
+  return sgapp.add_gi_cir(name, x, y, r, color)
 
 def add_gi_polygon(name, points, color):
-  sgapp.add_gi_polygon(name, points, color)
+  return sgapp.add_gi_polygon(name, points, color)
 
 def remove_gi(name):
   sgapp.remove_gi(name)
