@@ -1,14 +1,11 @@
-from PySide2.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPolygonItem
-from PySide2.QtGui import QPixmap, QBrush, QColor, QPolygonF
-from PySide2.QtCore import Qt, QTimer, QEvent, QPointF
+from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPolygonItem
+from PySide6.QtGui import QPixmap, QBrush, QColor, QPolygonF
+from PySide6.QtCore import Qt, QTimer, QEvent, QPointF, QUrl
+from PySide6.QtMultimedia import QSoundEffect
 from urllib.request import build_opener
 from random import randint
 
-try:
-  from simpleaudio import WaveObject
-except:
-  from .mockaudio import WaveObject  
 
 def make_color(color):
   if isinstance(color, tuple):
@@ -358,8 +355,10 @@ class SimGuiApp(QApplication):
       finally:
         self.in_modal=False
     def play_wav(self, path):
-      wo=WaveObject.from_wave_file(path)
-      wo.play()
+      s=QSoundEffect()
+      s.setSource(QUrl.fromLocalFile(path))
+      s.setLoopCount(1)
+      s.play()
 
 sgapp=SimGuiApp()
 
