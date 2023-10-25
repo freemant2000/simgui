@@ -7,6 +7,7 @@ def on_ready():
   add_graphics_view(400, 300)
   r=add_gi_rect("", 100, 200, 60, 20, "red")
   c=add_gi_img("", 40, 100, 40, 40, "pacman-l0.png")
+  make_gi_polygon([(20, 30), (140, 90), (60, 120)], "blue")
 
 def on_key():
   k=get_key()

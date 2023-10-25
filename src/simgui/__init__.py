@@ -210,7 +210,7 @@ class SimGuiApp(QApplication):
       col=kwargs.get("col", col)
       rows=kwargs.get("rows", 1)
       cols=kwargs.get("cols", 1)
-      self.lo.addWidget(ww.w, row, col, rows, cols)
+      self.lo.addWidget(ww.w if hasattr(ww, "w") else ww, row, col, rows, cols)
       self.last_row=row
       self.auto_row=row+rows
       self.auto_col=col+cols
