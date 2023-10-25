@@ -15,6 +15,56 @@ def make_color(color):
   else:
       return QColor(color)
 
+def get_css_color(color):
+  qc=make_color(color)
+  n=qc.name(QColor.HexRgb)
+  return n
+
+class WidgetWrapper:
+  def __init__(self, w, sgapp=None):
+      self.w=w
+      self.sgapp=sgapp
+  def on_click(self, func):
+      self.w.clicked.connect(func)
+  def set_label_text(self, text):
+      self.set_wid_text(text)
+  def set_wid_text(self, text):
+      self.w.setText(str(text))
+  def set_wid_min_size(self, w, h):
+      self.w.setMinimumSize(w, h)
+  def set_wid_max_size(self, w, h):
+      self.w.setMaximumSize(w, h)
+  def set_wid_color(self, color):
+      c=get_css_color(color)
+      self.w.setStyleSheet(f"background-color: {c}")
+  def set_label_img(self, img_url):
+      data=self.sgapp.fetch_web_data(img_url)
+      pm=QPixmap()
+      pm.loadFromData(data)
+      self.w.setScaledContents(True)
+      self.w.setPixmap(pm)
+  def on_edited(self, func):
+      self.w.textEdited.connect(func)
+  def on_index_changed(self, func):
+      self.w.currentIndexChanged.connect(func)
+  def add_combo_item(self, item):
+      self.w.addItem(str(item))
+  def get_combo_text(self):
+      return self.w.currentText()
+  def get_input_text(self):
+      return self.w.text()
+  def get_input_num(self):
+      t=self.get_input_text()
+      return int(t)
+  def get_input_value(self):    
+      t=self.get_input_text()
+      try:
+        return int(t)
+      except:
+        return t
+  def set_input_text(self, text):
+      self.w.setText(str(text))
+
 class GIWrapper:
   def __init__(self, sgapp, gi):
     self.sgapp=sgapp
@@ -109,25 +159,29 @@ class SimGuiApp(QApplication):
             handler()
     def add_label(self, name, text, **kwargs):
         lbl=QLabel(str(text))
-        self.add_wid(name, lbl, **kwargs)
+        ww=WidgetWrapper(lbl, self)
+        self.add_wid(name, ww, **kwargs)
+        return ww
     def add_button(self, name, text, **kwargs):
         btn=QPushButton(str(text))
-        def on_click():
-          self.call_handler("on_click_"+name)
-        btn.clicked.connect(on_click)
-        self.add_wid(name, btn, **kwargs)
+        ww=WidgetWrapper(btn)
+        if name:
+          def on_click():
+            self.call_handler("on_click_"+name)
+          ww.on_click(on_click)
+        self.add_wid(name, ww, **kwargs)
+        return ww
     def set_wid_text(self, name, text):
-      self.get_wid(name).setText(str(text))
+      self.get_wid(name).set_wid_text(text)
     def set_wid_min_size(self, name, w, h):
-      wid=self.get_wid(name)
-      wid.setMinimumSize(w, h)
+      ww=self.get_wid(name)
+      ww.set_wid_min_size(w, h)
     def set_wid_max_size(self, name, w, h):
-      wid=self.get_wid(name)
-      wid.setMaximumSize(w, h)
+      ww=self.get_wid(name)
+      ww.set_wid_max_size(w, h)
     def set_wid_color(self, name, color):
-      wid=self.get_wid(name)
-      c=self.get_css_color(color)
-      wid.setStyleSheet(f"background-color: {c}")
+      ww=self.get_wid(name)
+      ww.set_wid_color(color)
     def fetch_web_data(self, url):
       if url in self.op.cache:
         return self.op.cache[url]
@@ -136,31 +190,27 @@ class SimGuiApp(QApplication):
         self.op.cache[url]=d
         return d
     def set_label_img(self, name, img_url):
-      data=self.fetch_web_data(img_url)
-      pm=QPixmap()
-      pm.loadFromData(data)
-      lbl=self.get_wid(name)
-      lbl.setScaledContents(True)
-      lbl.setPixmap(pm)
-    def add_wid(self, name, w, **kwargs):
-      if not (name in self.wid_dict):
-        self.wid_dict[name]=w
-        if "right" in kwargs:
-          row=self.last_row
-          col=self.auto_col
-        else:
-          row=self.auto_row
-          col=0
-        row=kwargs.get("row", row)
-        col=kwargs.get("col", col)
-        rows=kwargs.get("rows", 1)
-        cols=kwargs.get("cols", 1)
-        self.lo.addWidget(w, row, col, rows, cols)
-        self.last_row=row
-        self.auto_row=row+rows
-        self.auto_col=col+cols
+      ww=self.get_wid(name)
+      ww.set_label_img(img_url)
+    def add_wid(self, name, ww, **kwargs):
+      if name:
+        if name in self.wid_dict:
+          raise ValueError(f"widget named {name} already exists", name)
+        self.wid_dict[name]=ww
+      if "right" in kwargs:
+        row=self.last_row
+        col=self.auto_col
       else:
-        raise ValueError(f"widget named {name} already exists", name)
+        row=self.auto_row
+        col=0
+      row=kwargs.get("row", row)
+      col=kwargs.get("col", col)
+      rows=kwargs.get("rows", 1)
+      cols=kwargs.get("cols", 1)
+      self.lo.addWidget(ww.w, row, col, rows, cols)
+      self.last_row=row
+      self.auto_row=row+rows
+      self.auto_col=col+cols
     def get_wid(self, name):
       if name in self.wid_dict:
         return self.wid_dict[name]
@@ -168,36 +218,40 @@ class SimGuiApp(QApplication):
         raise ValueError(f"no widget named {name}", name)
     def add_input(self, name, **kwargs):
         edit=QLineEdit()
-        def on_edited():
-          self.call_handler("on_edited_"+name)
-        edit.textEdited.connect(on_edited)
-        self.add_wid(name, edit, **kwargs)
+        ww=WidgetWrapper(edit)
+        if name:
+          def on_edited():
+            self.call_handler("on_edited_"+name)
+          ww.on_edited(on_edited)
+        self.add_wid(name, ww, **kwargs)
+        return ww
     def add_combo(self, name, **kwargs):
         cb=QComboBox()
-        def on_idx_changed():
-          self.call_handler("on_index_changed_"+name)
-        cb.currentIndexChanged.connect(on_idx_changed)
-        self.add_wid(name, cb, **kwargs)
+        ww=WidgetWrapper(cb)
+        if name:
+          def on_idx_changed():
+            self.call_handler("on_index_changed_"+name)
+          ww.on_index_changed(on_idx_changed)
+        self.add_wid(name, ww, **kwargs)
+        return ww
     def add_combo_item(self, name, item):
-        cb=self.get_wid(name)
-        cb.addItem(str(item))
+        ww=self.get_wid(name)
+        ww.add_combo_item(item)
     def get_combo_text(self, name):
-        cb=self.get_wid(name)
-        return cb.currentText()
+        ww=self.get_wid(name)
+        return ww.get_combo_text()
     def get_input_text(self, name):
-      inp=self.get_wid(name)
-      return inp.text()
+      ww=self.get_wid(name)
+      return ww.get_input_text()
     def get_input_num(self, name):
-      t=self.get_input_text(name)
-      return int(t)
+      ww=self.get_wid(name)
+      return ww.get_input_num()
     def get_input_value(self, name):
-      t=self.get_input_text(name)
-      try:
-        return int(t)
-      except:
-        return t
+      ww=self.get_wid(name)
+      return ww.get_input_value()
     def set_input_text(self, name, text):
-      self.get_wid(name).setText(str(text))
+      ww=self.get_wid(name)
+      ww.set_input_text(text)
     def on_key(self, event):
       evt=event.type()
       if evt==QEvent.KeyPress:
@@ -249,10 +303,6 @@ class SimGuiApp(QApplication):
       giw.set_gi_color(color)
       self.add_gi(name, giw)
       return giw
-    def get_css_color(self, color):
-      qc=make_color(color)
-      n=qc.name(QColor.HexRgb)
-      return n
     def add_gi_polygon(self, name, points, color):
       x, y=points[0]
       pts=[QPointF(x2-x, y2-y) for (x2, y2) in points]
@@ -368,7 +418,7 @@ def start(mod=None):
   sgapp.start(vars(__main__))
 
 def add_label(name, text, **kwargs):
-    sgapp.add_label(name, text, **kwargs)
+    return sgapp.add_label(name, text, **kwargs)
 
 def set_label_text(name, text):
     sgapp.set_wid_text(name, text)
@@ -386,13 +436,13 @@ def set_wid_max_size(name, w, h):
     sgapp.set_wid_max_size(name, w, h)
 
 def add_button(name, text, **kwargs):
-    sgapp.add_button(name, text, **kwargs)    
+    return sgapp.add_button(name, text, **kwargs)    
 
 def set_button_text(name, text):
     sgapp.set_wid_text(name, text)
 
 def add_input(name, **kwargs):
-    sgapp.add_input(name, **kwargs)    
+    return sgapp.add_input(name, **kwargs)    
 
 def get_input_text(name):
     return sgapp.get_input_text(name)        
@@ -407,7 +457,7 @@ def set_input_text(name, text):
     return sgapp.set_input_text(name, text)
 
 def add_combo(name, **kwargs):
-  sgapp.add_combo(name, **kwargs)      
+  return sgapp.add_combo(name, **kwargs)      
 
 def add_combo_item(name, item):
   sgapp.add_combo_item(name, item)
