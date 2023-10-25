@@ -1,5 +1,5 @@
 # simgui
-A simple GUI API (wrapper around PySide2) for Python learners to build simple yet interesting event driven apps.
+A simple GUI API (wrapper around PySide6) for Python learners to build simple yet interesting event driven apps.
 
 ![a sample GUI app](https://github.com/freemant2000/simgui/raw/main/images/simgui.png)
 
