@@ -420,6 +420,9 @@ def start(mod=None):
 def add_label(name, text, **kwargs):
     return sgapp.add_label(name, text, **kwargs)
 
+def make_label(text, **kwargs):
+    return add_label(None, text, **kwargs)
+
 def set_label_text(name, text):
     sgapp.set_wid_text(name, text)
 
@@ -438,11 +441,17 @@ def set_wid_max_size(name, w, h):
 def add_button(name, text, **kwargs):
     return sgapp.add_button(name, text, **kwargs)    
 
+def make_button(text, **kwargs):
+  return add_button(None, text, **kwargs)
+
 def set_button_text(name, text):
     sgapp.set_wid_text(name, text)
 
 def add_input(name, **kwargs):
     return sgapp.add_input(name, **kwargs)    
+
+def make_input(**kwargs):    
+    return add_input(None, **kwargs)
 
 def get_input_text(name):
     return sgapp.get_input_text(name)        
@@ -459,6 +468,9 @@ def set_input_text(name, text):
 def add_combo(name, **kwargs):
   return sgapp.add_combo(name, **kwargs)      
 
+def make_combo(**kwargs):
+  return add_combo(None, **kwargs)
+
 def add_combo_item(name, item):
   sgapp.add_combo_item(name, item)
 
@@ -471,14 +483,26 @@ def add_graphics_view(min_w, min_h, scene_w=None, scene_h=None):
 def add_gi_img(name, x, y, w, h, img_url):
   return sgapp.add_gi_img(name, x, y, w, h, img_url)
 
+def make_gi_img(x, y, w, h, img_url):
+  return add_gi_img(None, x, y, w, h, img_url)
+
 def add_gi_rect(name, x, y, w, h, color):
   return sgapp.add_gi_rect(name, x, y, w, h, color)
+
+def make_gi_rect(x, y, w, h, color):
+  return add_gi_rect(None, x, y, w, h, color)
 
 def add_gi_cir(name, x, y, r, color):
   return sgapp.add_gi_cir(name, x, y, r, color)
 
+def make_gi_cir(x, y, r, color):
+  return add_gi_cir(None, x, y, r, color)
+
 def add_gi_polygon(name, points, color):
   return sgapp.add_gi_polygon(name, points, color)
+
+def make_gi_polygon(points, color):
+  return add_gi_polygon(None, points, color)
 
 def remove_gi(name):
   sgapp.remove_gi(name)
