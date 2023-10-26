@@ -8,7 +8,7 @@ from random import randint
 
 
 def make_color(color):
-  if isinstance(color, tuple):
+  if isinstance(color, tuple) or isinstance(color, list):
     if len(color)==3:
       r, g, b=color
       return QColor(r, g, b)
