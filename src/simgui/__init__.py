@@ -11,11 +11,10 @@ except:
   from .mockaudio import WaveObject  
 
 def make_color(color):
-  if isinstance(color, tuple):
-    if len(color)==3:
+  try:
       r, g, b=color
       return QColor(r, g, b)
-  else:
+  except:
       return QColor(color)
 
 def get_css_color(color):
