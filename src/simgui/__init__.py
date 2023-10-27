@@ -30,8 +30,14 @@ class WidgetWrapper:
       self.w.clicked.connect(func)
   def set_label_text(self, text):
       self.set_wid_text(text)
+  def set_button_text(self, text):
+      self.set_wid_text(text)
+  def get_label_text(self):
+      return self.get_wid_text()
   def set_wid_text(self, text):
       self.w.setText(str(text))
+  def get_wid_text(self):
+      return self.w.text()
   def set_wid_min_size(self, w, h):
       self.w.setMinimumSize(w, h)
   def set_wid_max_size(self, w, h):
@@ -175,6 +181,8 @@ class SimGuiApp(QApplication):
         return ww
     def set_wid_text(self, name, text):
       self.get_wid(name).set_wid_text(text)
+    def get_wid_text(self, name):
+      return self.get_wid(name).get_wid_text()
     def set_wid_min_size(self, name, w, h):
       ww=self.get_wid(name)
       ww.set_wid_min_size(w, h)
@@ -417,14 +425,17 @@ def start(mod=None):
   import __main__
   sgapp.start(vars(__main__))
 
-def add_label(name, text, **kwargs):
+def add_label(name, text, **kwargs)->WidgetWrapper:
     return sgapp.add_label(name, text, **kwargs)
 
-def make_label(text, **kwargs):
+def make_label(text, **kwargs)->WidgetWrapper:
     return add_label(None, text, **kwargs)
 
 def set_label_text(name, text):
     sgapp.set_wid_text(name, text)
+
+def get_label_text(name):
+    return sgapp.get_wid_text(name)
 
 def set_label_img(name, img_url):
     sgapp.set_label_img(name, img_url)
@@ -438,19 +449,19 @@ def set_wid_min_size(name, w, h):
 def set_wid_max_size(name, w, h):
     sgapp.set_wid_max_size(name, w, h)
 
-def add_button(name, text, **kwargs):
+def add_button(name, text, **kwargs)->WidgetWrapper:
     return sgapp.add_button(name, text, **kwargs)    
 
-def make_button(text, **kwargs):
+def make_button(text, **kwargs)->WidgetWrapper:
   return add_button(None, text, **kwargs)
 
 def set_button_text(name, text):
     sgapp.set_wid_text(name, text)
 
-def add_input(name, **kwargs):
+def add_input(name, **kwargs)->WidgetWrapper:
     return sgapp.add_input(name, **kwargs)    
 
-def make_input(**kwargs):    
+def make_input(**kwargs)->WidgetWrapper:    
     return add_input(None, **kwargs)
 
 def get_input_text(name):
@@ -465,10 +476,10 @@ def get_input_value(name):
 def set_input_text(name, text):
     return sgapp.set_input_text(name, text)
 
-def add_combo(name, **kwargs):
+def add_combo(name, **kwargs)->WidgetWrapper:
   return sgapp.add_combo(name, **kwargs)      
 
-def make_combo(**kwargs):
+def make_combo(**kwargs)->WidgetWrapper:
   return add_combo(None, **kwargs)
 
 def add_combo_item(name, item):
@@ -480,28 +491,28 @@ def get_combo_text(name):
 def add_graphics_view(min_w, min_h, scene_w=None, scene_h=None):
   sgapp.add_graphics_view(min_w, min_h, scene_w, scene_h)
 
-def add_gi_img(name, x, y, w, h, img_url):
+def add_gi_img(name, x, y, w, h, img_url)->GIWrapper:
   return sgapp.add_gi_img(name, x, y, w, h, img_url)
 
-def make_gi_img(x, y, w, h, img_url):
+def make_gi_img(x, y, w, h, img_url)->GIWrapper:
   return add_gi_img(None, x, y, w, h, img_url)
 
-def add_gi_rect(name, x, y, w, h, color):
+def add_gi_rect(name, x, y, w, h, color)->GIWrapper:
   return sgapp.add_gi_rect(name, x, y, w, h, color)
 
-def make_gi_rect(x, y, w, h, color):
+def make_gi_rect(x, y, w, h, color)->GIWrapper:
   return add_gi_rect(None, x, y, w, h, color)
 
-def add_gi_cir(name, x, y, r, color):
+def add_gi_cir(name, x, y, r, color)->GIWrapper:
   return sgapp.add_gi_cir(name, x, y, r, color)
 
-def make_gi_cir(x, y, r, color):
+def make_gi_cir(x, y, r, color)->GIWrapper:
   return add_gi_cir(None, x, y, r, color)
 
-def add_gi_polygon(name, points, color):
+def add_gi_polygon(name, points, color)->GIWrapper:
   return sgapp.add_gi_polygon(name, points, color)
 
-def make_gi_polygon(points, color):
+def make_gi_polygon(points, color)->GIWrapper:
   return add_gi_polygon(None, points, color)
 
 def remove_gi(name):
@@ -542,6 +553,9 @@ def make_unique_name(prefix):
 
 def gi_exists(name):
   return sgapp.gi_exists(name)
+
+def get_wid(name)->WidgetWrapper:
+  return sgapp.get_wid(name)
 
 def are_gi_overlap(n1, n2):
   return sgapp.are_gi_overlap(n1, n2)
