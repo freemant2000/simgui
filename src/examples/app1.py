@@ -21,5 +21,5 @@ def on_edited_i1():
 def on_index_changed_cb1():
     print(get_combo_text("cb1")+" is selected")
 
-start(globals())
+start()
 
