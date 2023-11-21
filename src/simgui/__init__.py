@@ -45,7 +45,7 @@ class WidgetWrapper:
   def on_edited(self, func):
       self.w.textEdited.connect(func)
   def on_index_changed(self, func):
-      self.w.currentIndexChanged.connect(func)
+      self.w.activated.connect(func)
   def add_combo_item(self, item):
       self.w.addItem(str(item))
   def get_combo_text(self):
