@@ -24,4 +24,4 @@ def on_click_b2():
   set_label_img("a1", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbCuwaTTtDhzHqojo_s7elgql5ZIOo1Grg7g&usqp=CAU")
   set_wid_color("a1", "green")
 
-start(globals())
+start()
