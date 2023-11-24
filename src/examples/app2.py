@@ -7,6 +7,7 @@ def on_ready():
   add_button("b1", "Big")
   add_button("b2", "Small")
   add_label("a1", "4")
+  set_wid_size("a1", 200, 160)
   add_graphics_view(400, 300)
   add_gi_img("p1", 50, 50, 200, 160, "https://media.gettyimages.com/illustrations/tyrannosaurus-rex-dinosaur-illustration-id99311107?s=612x612")
   add_gi_rect("p2", 10, 10, 40, 30, "blue")
