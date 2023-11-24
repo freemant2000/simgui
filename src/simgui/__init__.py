@@ -21,7 +21,7 @@ def get_css_color(color):
   return n
 
 class WidgetWrapper:
-  def __init__(self, w, sgapp=None):
+  def __init__(self, w: QWidget, sgapp=None):
       self.w=w
       self.sgapp=sgapp
   def on_click(self, func):
@@ -32,10 +32,12 @@ class WidgetWrapper:
       self.set_wid_text(text)
   def get_label_text(self):
       return self.get_wid_text()
-  def set_wid_text(self, text):
+  def set_wid_text(self, text: str|int):
       self.w.setText(str(text))
   def get_wid_text(self):
       return self.w.text()
+  def set_wid_size(self, w: int, h: int):
+      self.w.setFixedSize(w, h)
   def set_wid_min_size(self, w, h):
       self.w.setMinimumSize(w, h)
   def set_wid_max_size(self, w, h):
@@ -177,10 +179,13 @@ class SimGuiApp(QApplication):
           ww.on_click(on_click)
         self.add_wid(name, ww, **kwargs)
         return ww
-    def set_wid_text(self, name, text):
+    def set_wid_text(self, name: str, text: str|int):
       self.get_wid(name).set_wid_text(text)
     def get_wid_text(self, name):
       return self.get_wid(name).get_wid_text()
+    def set_wid_size(self, name: str, w: int, h: int):
+      ww=self.get_wid(name)
+      ww.set_wid_size(w, h)
     def set_wid_min_size(self, name, w, h):
       ww=self.get_wid(name)
       ww.set_wid_min_size(w, h)
@@ -219,7 +224,7 @@ class SimGuiApp(QApplication):
       self.last_row=row
       self.auto_row=row+rows
       self.auto_col=col+cols
-    def get_wid(self, name):
+    def get_wid(self, name)->WidgetWrapper:
       if name in self.wid_dict:
         return self.wid_dict[name]
       else:
@@ -425,40 +430,43 @@ def start(mod=None):
   import __main__
   sgapp.start(vars(__main__))
 
-def add_label(name, text, **kwargs)->WidgetWrapper:
+def add_label(name: str, text: str, **kwargs)->WidgetWrapper:
     return sgapp.add_label(name, text, **kwargs)
 
-def make_label(text, **kwargs)->WidgetWrapper:
+def make_label(text: str, **kwargs)->WidgetWrapper:
     return add_label(None, text, **kwargs)
 
-def set_label_text(name, text):
+def set_label_text(name: str, text: str|int):
     sgapp.set_wid_text(name, text)
 
-def get_label_text(name):
+def get_label_text(name: str):
     return sgapp.get_wid_text(name)
 
-def set_label_img(name, img_url):
+def set_label_img(name: str, img_url: str):
     sgapp.set_label_img(name, img_url)
 
-def set_wid_color(name, color):
+def set_wid_color(name: str, color):
     sgapp.set_wid_color(name, color)
 
-def set_wid_min_size(name, w, h):
+def set_wid_size(name: str, w: int, h: int):
+    sgapp.set_wid_size(name, w, h)
+
+def set_wid_min_size(name: str, w, h):
     sgapp.set_wid_min_size(name, w, h)
 
-def set_wid_max_size(name, w, h):
+def set_wid_max_size(name: str, w, h):
     sgapp.set_wid_max_size(name, w, h)
 
-def add_button(name, text, **kwargs)->WidgetWrapper:
+def add_button(name: str, text: str, **kwargs)->WidgetWrapper:
     return sgapp.add_button(name, text, **kwargs)    
 
-def make_button(text, **kwargs)->WidgetWrapper:
+def make_button(text: str, **kwargs)->WidgetWrapper:
   return add_button(None, text, **kwargs)
 
-def set_button_text(name, text):
+def set_button_text(name: str, text: str|int):
     sgapp.set_wid_text(name, text)
 
-def add_input(name, **kwargs)->WidgetWrapper:
+def add_input(name: str, **kwargs)->WidgetWrapper:
     return sgapp.add_input(name, **kwargs)    
 
 def make_input(**kwargs)->WidgetWrapper:    
@@ -491,22 +499,22 @@ def get_combo_text(name):
 def add_graphics_view(min_w, min_h, scene_w=None, scene_h=None):
   sgapp.add_graphics_view(min_w, min_h, scene_w, scene_h)
 
-def add_gi_img(name, x, y, w, h, img_url)->GIWrapper:
+def add_gi_img(name: str, x: int, y: int, w: int, h: int, img_url: str)->GIWrapper:
   return sgapp.add_gi_img(name, x, y, w, h, img_url)
 
-def make_gi_img(x, y, w, h, img_url)->GIWrapper:
+def make_gi_img(x: int, y: int, w: int, h: int, img_url: str)->GIWrapper:
   return add_gi_img(None, x, y, w, h, img_url)
 
-def add_gi_rect(name, x, y, w, h, color)->GIWrapper:
+def add_gi_rect(name: str, x: int, y: int, w: int, h: int, color)->GIWrapper:
   return sgapp.add_gi_rect(name, x, y, w, h, color)
 
-def make_gi_rect(x, y, w, h, color)->GIWrapper:
+def make_gi_rect(x: int, y: int, w: int, h: int, color)->GIWrapper:
   return add_gi_rect(None, x, y, w, h, color)
 
-def add_gi_cir(name, x, y, r, color)->GIWrapper:
+def add_gi_cir(name: str, x: int, y: int, r: int, color)->GIWrapper:
   return sgapp.add_gi_cir(name, x, y, r, color)
 
-def make_gi_cir(x, y, r, color)->GIWrapper:
+def make_gi_cir(x: int, y: int, r: int, color)->GIWrapper:
   return add_gi_cir(None, x, y, r, color)
 
 def add_gi_polygon(name, points, color)->GIWrapper:
@@ -518,17 +526,20 @@ def make_gi_polygon(points, color)->GIWrapper:
 def remove_gi(name):
   sgapp.remove_gi(name)
 
-def get_key():
+def get_key()->str:
   return sgapp.get_key()
 
-def get_gi_x(name):
+def get_gi_x(name)->int:
   return sgapp.get_gi_x(name)
 
-def get_gi_y(name):
+def get_gi_y(name)->int:
   return sgapp.get_gi_y(name)
 
-def set_gi_pos(name, x, y):
+def set_gi_pos(name, x: int, y: int):
   sgapp.set_gi_pos(name, x, y)
+
+def set_gi_size(name: str, w: int, h: int):
+  sgapp.set_gi_size(name, w, h)
 
 def set_gi_img(name, img_url_or_file):
   sgapp.set_gi_img(name, img_url_or_file)
@@ -542,7 +553,7 @@ def set_gi_rect_size(name, w, h):
 def set_gi_cir_radius(name, r):
   sgapp.set_gi_cir_radius(name, r)
 
-def start_timer(name, interval):
+def start_timer(name: str, interval: float):
   sgapp.start_timer(name, interval)
 
 def stop_timer(name):
@@ -551,16 +562,16 @@ def stop_timer(name):
 def make_unique_name(prefix):
   return sgapp.make_unique_name(prefix)
 
-def gi_exists(name):
+def gi_exists(name: str):
   return sgapp.gi_exists(name)
 
-def get_wid(name)->WidgetWrapper:
+def get_wid(name: str)->WidgetWrapper:
   return sgapp.get_wid(name)
 
-def are_gi_overlap(n1, n2):
+def are_gi_overlap(n1: str, n2: str)->bool:
   return sgapp.are_gi_overlap(n1, n2)
 
-def msg_box(text):
+def msg_box(text: str):
   sgapp.msg_box(text)
 
 def quit():
