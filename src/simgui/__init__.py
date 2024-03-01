@@ -1,4 +1,3 @@
-from xmlrpc.client import Boolean
 from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPolygonItem
 from PySide6.QtGui import QPixmap, QBrush, QColor, QPolygonF
