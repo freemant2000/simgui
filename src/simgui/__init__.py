@@ -1,3 +1,4 @@
+from typing import Union
 from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QApplication, QComboBox, QGridLayout, QMessageBox
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPolygonItem
 from PySide6.QtGui import QPixmap, QBrush, QColor, QPolygonF
@@ -5,7 +6,6 @@ from PySide6.QtCore import Qt, QTimer, QEvent, QPointF, QUrl
 from PySide6.QtMultimedia import QSoundEffect
 from urllib.request import build_opener
 from random import randint
-
 
 def make_color(color):
   try:
@@ -31,7 +31,7 @@ class WidgetWrapper:
       self.set_wid_text(text)
   def get_label_text(self):
       return self.get_wid_text()
-  def set_wid_text(self, text: str|int):
+  def set_wid_text(self, text: Union[str, int]):
       self.w.setText(str(text))
   def get_wid_text(self):
       return self.w.text()
@@ -113,7 +113,7 @@ class SimGraphicsView(QGraphicsView):
   def keyReleaseEvent(self, event):
     self.key_handler(event)
 
-class MyWidget(QWidget):
+class MainWin(QWidget):
   def __init__(self, key_handler):
       super().__init__()
       self.key_handler=key_handler
@@ -141,7 +141,7 @@ class SimGuiApp(QApplication):
         self.auto_row=0
         self.auto_col=0
         self.make_opener()
-        self.wid=MyWidget(self.on_key)
+        self.wid=MainWin(self.on_key)
         self.wid.setWindowTitle("simgui")
         self.lo=QGridLayout()
         self.wid.setLayout(self.lo)
@@ -178,7 +178,7 @@ class SimGuiApp(QApplication):
           ww.on_click(on_click)
         self.add_wid(name, ww, **kwargs)
         return ww
-    def set_wid_text(self, name: str, text: str|int):
+    def set_wid_text(self, name: str, text: Union[str, int]):
       self.get_wid(name).set_wid_text(text)
     def get_wid_text(self, name):
       return self.get_wid(name).get_wid_text()
@@ -421,6 +421,8 @@ class SimGuiApp(QApplication):
       s.setSource(QUrl.fromLocalFile(path))
       s.setLoopCount(1)
       s.play()
+    def get_win(self)->MainWin:
+      return self.wid
 
 sgapp=SimGuiApp()
 
@@ -435,7 +437,7 @@ def add_label(name: str, text: str, **kwargs)->WidgetWrapper:
 def make_label(text: str, **kwargs)->WidgetWrapper:
     return add_label(None, text, **kwargs)
 
-def set_label_text(name: str, text: str|int):
+def set_label_text(name: str, text: Union[str, int]):
     sgapp.set_wid_text(name, text)
 
 def get_label_text(name: str):
@@ -462,7 +464,7 @@ def add_button(name: str, text: str, **kwargs)->WidgetWrapper:
 def make_button(text: str, **kwargs)->WidgetWrapper:
   return add_button(None, text, **kwargs)
 
-def set_button_text(name: str, text: str|int):
+def set_button_text(name: str, text: Union[str, int]):
     sgapp.set_wid_text(name, text)
 
 def add_input(name: str, **kwargs)->WidgetWrapper:
@@ -581,3 +583,6 @@ def play_wav(path):
 
 def send_data_to_future(data, interval):
   sgapp.send_data_to_future(data, interval)
+
+def get_win()->MainWin:
+  return sgapp.get_win()
