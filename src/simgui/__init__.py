@@ -401,10 +401,10 @@ class SimGuiApp(QApplication):
       else:
         return "Unknown"
     def get_mouse_x(self)->int:
-      p=self.mouse_ev.position()
+      p=self.mouse_ev.pos()
       return int(p.x())
     def get_mouse_y(self)->int:
-      p=self.mouse_ev.position()
+      p=self.mouse_ev.pos()
       return int(p.y())
     def get_mouse_btn(self)->str:
       b=self.mouse_ev.button()
