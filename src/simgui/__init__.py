@@ -109,13 +109,16 @@ class GIWrapper:
     return r1.intersects(r2)
 
 class SimGraphicsView(QGraphicsView):
-  def __init__(self, scene, key_handler):
+  def __init__(self, scene, key_handler, mouse_handler):
       super().__init__(scene)
       self.key_handler=key_handler
+      self.mouse_handler=mouse_handler
   def keyPressEvent(self, event):
     self.key_handler(event)
   def keyReleaseEvent(self, event):
     self.key_handler(event)
+  def mousePressEvent(self, event):
+    self.mouse_handler(event)
 
 class MainWin(QWidget):
   def __init__(self, key_handler):
@@ -276,11 +279,16 @@ class SimGuiApp(QApplication):
       elif evt==QEvent.KeyRelease:
         self.key_ev=event
         self.call_handler("on_key_up")
+    def on_mouse(self, event):
+      evt=event.type()
+      if evt==QEvent.MouseButtonPress:
+        self.mouse_ev=event
+        self.call_handler("on_mouse")
     def add_graphics_view(self, min_w, min_h, scene_w=None, scene_h=None):
         if self.gs:
           raise ValueError("Only one graphics view can be added")
         self.gs=QGraphicsScene()
-        self.gv=SimGraphicsView(self.gs, self.on_key)
+        self.gv=SimGraphicsView(self.gs, self.on_key, self.on_mouse)
         self.gv.setMinimumSize(min_w, min_h)
         if scene_w and scene_h:
           self.gv.setSceneRect(0, 0, scene_w, scene_h)
@@ -379,8 +387,7 @@ class SimGuiApp(QApplication):
         name=prefix+str(randint(0, 65535))
         if not(name in self.gi_dict) and not(name in self.wid_dict):
           return name
-
-    def get_key(self):
+    def get_key(self)->str:
       code_map={Qt.Key_Left: "Left", Qt.Key_Right: "Right", Qt.Key_Up: "Up", Qt.Key_Down: "Down", \
             Qt.Key_Enter: "Enter", Qt.Key_Insert: "Insert", Qt.Key_Delete: "Delete", \
             Qt.Key_Return: "Enter", Qt.Key_Home: "Home", Qt.Key_End: "End",
@@ -393,6 +400,20 @@ class SimGuiApp(QApplication):
         return txt
       else:
         return "Unknown"
+    def get_mouse_x(self)->int:
+      p=self.mouse_ev.position()
+      return int(p.x())
+    def get_mouse_y(self)->int:
+      p=self.mouse_ev.position()
+      return int(p.y())
+    def get_mouse_btn(self)->str:
+      b=self.mouse_ev.button()
+      if b==Qt.LeftButton:
+        return "Left"
+      elif b==Qt.RightButton:
+        return "Right"
+      else:
+        return "Other"
     def start_timer(self, name, interval):
       def on_timeout():
         if not self.in_modal:
@@ -531,6 +552,15 @@ def remove_gi(name):
 
 def get_key()->str:
   return sgapp.get_key()
+
+def get_mouse_x()->int:
+  return sgapp.get_mouse_x()
+
+def get_mouse_y()->int:
+  return sgapp.get_mouse_y()
+
+def get_mouse_btn()->str:
+  return sgapp.get_mouse_btn()
 
 def get_gi_x(name)->int:
   return sgapp.get_gi_x(name)
