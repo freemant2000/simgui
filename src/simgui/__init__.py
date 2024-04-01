@@ -160,13 +160,16 @@ class SimGuiApp(QApplication):
       self.op=build_opener()
       self.op.addheaders=[("User-agent", "Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11")]
       self.op.cache={}
-    def call_handler(self, fn, data=None):
+    def call_handler(self, fn, data=None)->bool:
         handler=self.mod.get(fn)
         if handler:
           if data:
             handler(data)
           else:
             handler()
+          return True
+        else:
+          return False
     def add_label(self, name, text, **kwargs):
         lbl=QLabel(str(text))
         ww=WidgetWrapper(lbl, self)
@@ -275,11 +278,12 @@ class SimGuiApp(QApplication):
       elif evt==QEvent.KeyRelease:
         self.key_ev=event
         self.call_handler("on_key_up")
-    def on_mouse(self, event):
+    def on_mouse(self, event: QEvent):
       evt=event.type()
       if evt==QEvent.MouseButtonPress:
         self.mouse_ev=event
-        self.call_handler("on_mouse")
+        if self.call_handler("on_mouse"):
+          event.accept()
     def add_graphics_view(self, min_w, min_h, scene_w=None, scene_h=None):
         if self.gs:
           raise ValueError("Only one graphics view can be added")
