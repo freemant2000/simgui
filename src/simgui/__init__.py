@@ -96,7 +96,7 @@ class GIWrapper:
   def set_gi_rect_size(self, w, h):
     self.gi.setRect(0, 0, w, h)
   def set_gi_cir_radius(self, r):
-    self.gi.setRect(0, 0, r, r)
+    self.gi.setRect(0, 0, r*2, r*2)
   def remove_gi(self):
     self.sgapp.gs.removeItem(self.gi)
   def get_brect_in_parent(self):
@@ -344,7 +344,7 @@ class SimGuiApp(QApplication):
       giw=self.get_gi(name)
       giw.set_gi_rect_size(w, h)
     def add_gi_cir(self, name, x, y, r, color):
-      gi=QGraphicsEllipseItem(0, 0, r, r)
+      gi=QGraphicsEllipseItem(0, 0, r*2, r*2)
       giw=GIWrapper(self, gi)
       giw.set_gi_pos(x, y)
       giw.set_gi_color(color)   
