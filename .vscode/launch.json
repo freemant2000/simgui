@@ -11,7 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/src/examples",
-            "env": {"PYTHONPATH" : "${workspaceRoot}/src"}
+            "env": {"PYTHONPATH" : "${workspaceRoot}/src"},
+            "pythonArgs": ["-Xfrozen_modules=off"],
         },
         {
             "name": "Python: Test",

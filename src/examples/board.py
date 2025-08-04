@@ -1,39 +1,50 @@
 from simgui import *
+class Grid:
+  pass
 
-w, h=30, 30
-mg=3
-cnt_w, cnt_h=w-2*mg, h-2*mg
-board_w, board_h=13, 10
-max_r, max_c=board_h-1, board_w-1
+def make_grid(w, h):
+  g=Grid()
+  g.w, g.h=w, h
+  g.cell_w=30
+  g.cell_h=30
+  g.mgn=3
+  return g
 
-def get_cell_center(r, c):
-  return (c*w+w//2, r*h+h//2)
+def check_col(g, c):
+  return c>=0 and c<g.w//g.cell_w
 
-def cnt_x(c):
-  return c*w+mg
+def check_row(g, r):
+  return r>=0 and r<g.h//g.cell_h
 
-def cnt_y(r):
-  return r*h+mg
+def can_move(g, r, c, d):
+  return not((r==0 and d=="u") or 
+             (r==g.h//g.cell_h-1 and d=="d") or 
+             (c==0 and d=="l") or 
+             (c==g.w//g.cell_w-1 and d=="r"))
 
-def add_img_in_cell(item_name, r, c, img_name):
-  add_gi_img(item_name, cnt_x(c), cnt_y(r), cnt_w, cnt_h, img_name)
+def add_img(g, n, r, c, fn):
+  add_gi_img(n, cell_x(g, c)+g.mgn, cell_y(g, r)+g.mgn,
+             g.cell_w-2*g.mgn, g.cell_h-2*g.mgn, fn)
+def move_img(g, n, r, c):
+  set_gi_pos(n, cell_x(g, c)+g.mgn, cell_y(g, r)+g.mgn)
 
-def move_img_to_cell(item_name, r, c):
-  set_gi_pos(item_name, cnt_x(c), cnt_y(r))
+def cell_x(g, c):
+  return g.cell_w*c
+def cell_y(g, r):
+  return g.cell_h*r
 
-def get_dist(r1, c1, r2, c2):
-  return abs(r2-r1)+abs(c2-c1)
-
-def get_next_loc(r, c, d):
-  nr, nc=r, c
+def get_next_loc(loc, d):
+  r, c=loc
   if d=="u":
-    nr=r-1
+    return (r-1, c)
   elif d=="d":
-    nr=r+1
+    return (r+1, c)
   elif d=="l":
-    nc=c-1
+    return (r, c-1)
   elif d=="r":
-    nc=c+1
-  return (nr, nc)
+    return (r, c+1)
 
-
+def get_last_loc(loc, ds):
+  for d in ds:
+    loc=get_next_loc(loc, d)
+  return loc

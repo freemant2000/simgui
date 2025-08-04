@@ -1,36 +1,32 @@
-from board import add_img_in_cell, move_img_to_cell, get_next_loc
-from walls import can_move
-from simgui import *
-from pellets import pellets, eat_pellet
+from board import *
 
-#r, c=1, 2
-r, c=3, 2
-facing, look="r", 0
-is_powered_up=False
-score=0
+class Pacman:
+  pass
 
-def get_img_name():
-  return "pacman-"+facing+str(look)+".png"
+def make_pm(g, r, c):
+  pm=Pacman()
+  pm.g=g
+  pm.r=r
+  pm.c=c
+  pm.look=0
+  pm.face="r"
+  add_img(pm.g, "pm", pm.r, pm.c, "pacman-r0.png")
+  return pm
 
-def make_pacman():
-  add_img_in_cell("pm", r, c, get_img_name())
+def move_pm(pm, d):
+  if can_move(pm.g, pm.r, pm.c, d):
+    if d=="l":
+      pm.c=pm.c-1
+    elif d=="r":
+      pm.c=pm.c+1
+    elif d=="u":
+      pm.r=pm.r-1
+    elif d=="d":
+      pm.r=pm.r+1
+    pm.look=1-pm.look
+    move_img(pm.g, "pm", pm.r, pm.c)
+    set_gi_img("pm", f"pacman-{pm.face}{pm.look}.png")
 
-def set_direction(d):
-  global facing, look
-  facing, look=d, 0
-
-def change_look():
-  global look
-  look=look+1
-  if look>1:
-    look=0
-  set_gi_img("pm", get_img_name())    
-
-def move_pacman():
-  global r, c, score
-  if can_move(r, c,  facing):
-    r, c=get_next_loc(r, c, facing)
-    move_img_to_cell("pm", r, c)
-    if pellets[r][c]>0:
-      score=score+1
-      eat_pellet(r, c)
+def set_pm_face(pm, d):
+  pm.face=d
+  set_gi_img("pm", f"pacman-{pm.face}{pm.look}.png")

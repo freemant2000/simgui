@@ -126,8 +126,6 @@ class MainWin(QWidget):
     self.key_handler(event)
 
 class SimGuiApp(QApplication):
-    SCENE_WIDTH=400
-    SCENE_HEIGHT=300
     def __init__(self) -> None:
         super().__init__()
         self.mod=None
@@ -294,7 +292,7 @@ class SimGuiApp(QApplication):
           self.gv.setSceneRect(0, 0, scene_w, scene_h)
         else:
           #there is a 1 pixel margin hard coded
-          self.gv.setSceneRect(0, 0, SimGuiApp.SCENE_WIDTH-2, SimGuiApp.SCENE_HEIGHT-2)
+          self.gv.setSceneRect(0, 0, min_w-2, min_h-2)
         self.add_wid("simgui_gv", self.gv)
     def add_gi_img(self, name, x, y, w, h, img_url_or_file):
       pm2=self.load_pixmap(img_url_or_file, w, h)
